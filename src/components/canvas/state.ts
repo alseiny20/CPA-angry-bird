@@ -42,12 +42,12 @@ const dist2 = (o1: Coord, o2: Coord) =>
 
     let coord = { ...ball.coord };
 
-    // Appliquer la gravité
+    // appliation la gravité
     if (!ball.resting) {
         coord.dy += conf.GRAVITY * ball.weight;
     }
 
-    // Appliquer la résistance de l'air de manière différente selon la direction
+    // résistance de l'air de manière différente selon la direction
     if (coord.dy > 0) {
         // Descendre : la résistance de l'air ralentit moins la balle
         coord.dy *= conf.AIR_FRICTION_DESCENDING;
@@ -56,7 +56,7 @@ const dist2 = (o1: Coord, o2: Coord) =>
         coord.dy *=  conf.AIR_FRICTION_ASCENDING;
     }
 
-    // Appliquer la résistance de l'air horizontalement
+    // résistance de l'air horizontalement
     coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
 
     // Mise à jour des positions
@@ -182,32 +182,37 @@ const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
 
   // Déterminer le côté de la brique sur lequel la collision a eu lieu
   let collisionSide = determineCollisionSide(ball, brique);
-  console.log("collisionSide: " + collisionSide)
+  let normalX = - 5, normalY = -5;
 
-  // Mettre à jour la direction de la balle en fonction du côté de la collision
-  if (collisionSide === 'left' || collisionSide === 'right') {
-    // Collision sur le côté gauche ou droit de la brique, inverser la vitesse horizontale
-    ball.coord.dx *= -conf.SQUARE_RESTITUTIONt;
-    console.log("collisionSide: " + collisionSide + ", ball.coord.x: " + ball.coord.x + ", brique.coord.x: " + brique.coord.x + ", brique.width: " + brique.width)
-
-    // if (ball.coord.y)
-    // Ajuster la position pour éviter que la balle ne pénètre dans la brique
-    ball.coord.x = collisionSide === 'left' 
-      ? brique.coord.x - conf.RADIUS 
-      : brique.coord.x + brique.width + conf.RADIUS;
-  } else if (collisionSide === 'top' || collisionSide === 'bottom') {
-    console.log("collisionSide: " + collisionSide + ", ball.coord.y: " + ball.coord.y + ", brique.coord.y: " + brique.coord.y + ", brique.height: " + brique.height)
-    // Collision sur le côté haut ou bas de la brique, inverser la vitesse verticale
-    ball.coord.dy *= -conf.SQUARE_RESTITUTIONt;
-    // Ajuster la position pour éviter que la balle ne pénètre dans la brique
-    ball.coord.y = collisionSide === 'top' 
-      ? brique.coord.y - conf.RADIUS 
-      : brique.coord.y + brique.height + conf.RADIUS;
+  // Ajuster la position de la balle pour éviter qu'elle ne soit plus en collision avec la brique
+  if (collisionSide === 'left') {
+    normalX = -1; normalY = 0;
+    ball.coord.x = brique.coord.x - conf.RADIUS;
+  } else if (collisionSide === 'right') {
+    normalX = 1; normalY = 0;
+    ball.coord.x = brique.coord.x + brique.width + conf.RADIUS;
+  } else if (collisionSide === 'top') {
+    normalX = 0; normalY = -1;
+    ball.coord.y = brique.coord.y - conf.RADIUS;
+  } else if (collisionSide === 'bottom') {
+    normalX = 0; normalY = 1;
+    ball.coord.y = brique.coord.y + brique.height + conf.RADIUS;
   }
 
-  // Diminuer la vie de la brique
+  // Inversersion la composante de la vitesse de la balle qui est parallèle à la normale
+  const dotProduct = ball.coord.dx * normalX + ball.coord.dy * normalY;
+  ball.coord.dx -= 2 * dotProduct * normalX;
+  ball.coord.dy -= 2 * dotProduct * normalY;
+
+  //coefficient de restitution pour le rebond
+  ball.coord.dx *= conf.SQUARE_RESTITUTION;
+  ball.coord.dy *= conf.SQUARE_RESTITUTION;
+
+  // update la vie de la brique
   brique.life -= 1;
 };
+
+
 
 function determineCollisionSide(ball: Ball, brique: Brique): string {
   let nearestX = Math.max(brique.coord.x, Math.min(ball.coord.x, brique.coord.x + brique.width));
@@ -229,7 +234,7 @@ function checkPossibleMove(ball: Ball, obstacles: Array<Brique>, bound: Size): C
   // Calculer la nouvelle position proposée
   let proposedPos = { x: ball.coord.x + ball.coord.dx, y: ball.coord.y + ball.coord.dy, dx: ball.coord.dx, dy: ball.coord.dy };
 
-  // Vérifier les limites du terrain de jeu
+  // Vérification les limites du terrain de jeu
   if (proposedPos.x - conf.RADIUS < 0 || proposedPos.x + conf.RADIUS > bound.width) {
     proposedPos.x = ball.coord.x;
     ball.coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;
@@ -239,13 +244,13 @@ function checkPossibleMove(ball: Ball, obstacles: Array<Brique>, bound: Size): C
     ball.coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;
   }
 
-  // Vérifier les collisions avec les briques
+  // Vérifiecation les collisions avec les briques
   obstacles.forEach(obstacle => {
     if (checkBallBriqueCollision(ball, obstacle)) {
-      // Déterminer le côté de la collision
+      // Détermination du  côté de la collision
       let collisionSide = determineCollisionSide(ball, obstacle);
 
-      // Ajuster la position de la balle en fonction du côté de la collision
+      // ajustememnt de la position de la balle en fonction du côté de la collision
       if (collisionSide === 'left' || collisionSide === 'right') {
         proposedPos.x = collisionSide === 'left'
           ? obstacle.coord.x - conf.RADIUS
