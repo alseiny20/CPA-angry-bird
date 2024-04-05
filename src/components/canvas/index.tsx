@@ -16,33 +16,66 @@ const initCanvas =
   
 
 const Canvas = ({ height, width }: { height: number; width: number }) => {
-  let myArray = new Array(1).fill(null).map((_) => ({
+  let myArrayBall = new Array(conf.ball_none_numbers).fill(null).map((_) => ({
     life: conf.BALLLIFE,
+    resting: true,
+    weight: 2,
     coord: {
       x: randomInt(width),
-      y: randomInt(height),
-      dx: randomSign() * Math.random() * 10,
-      dy: randomSign() * Math.random() * 10,
+      y: height - 500,
+      dx: 0,
+      dy: 0
     },
     color: '#ff0000',
   }))
   // Création et ajout de six nouvelles balles à myArray
-  const newBalls = new Array(3).fill(null).map((_) => ({
+  const newBalls = new Array(conf.ball_numbers).fill(null).map((_) => ({
     life: conf.BALLLIFE,
+    weight: 2,
+    resting: true,
     coord: {
       x: randomInt(width),
       y: randomInt(height),
-      dx: randomSign() * Math.random() * 10,
-      dy: randomSign() * Math.random() * 10,
+      dx: randomSign() * randomInt(10),
+      dy: randomSign() * randomInt(10)
     },
     color: '#00ff00', // Couleur verte pour les nouvelles balles
   }));
 
+  let myArrayBriques = new Array(conf.brique_numbers).fill(null).map((_) => ({
+    life : conf.BRIQUELIFE,
+    weight : 50,
+    coord: {
+      x: randomInt(width),
+      y: randomInt(height),
+      dx: 0,
+      dy: 0
+    },
+    width: 50,
+    height: randomInt(100),
+    color: '#0000ff', // Couleur bleue pour les briques
+  }));
+
+  // myArrayBriques = myArrayBriques.concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
+  //   life : conf.BRIQUELIFE,
+  //   weight : 50,
+  //   coord: {
+  //     x: 0,
+  //     y: height - 300,
+  //     dx: 0,
+  //     dy: 0
+  //   },
+  //   width: width,
+  //   height: 50,
+  //   color: '#0000ff', // Couleur bleue pour les briques
+  // })));
+
   // Concaténation des nouvelles balles à l'array existant
-  myArray = myArray.concat(newBalls);
+  myArrayBall = myArrayBall.concat(newBalls);
 
   const initialState: State = {
-    pos: myArray,
+    pos: myArrayBall,
+    briques: myArrayBriques,
     size: { height, width },
     endOfGame: true,
   }
@@ -83,6 +116,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
       ref.current.removeEventListener('click', onMove)
       ref.current.removeEventListener('mousemove', onMove)
       ref.current.removeEventListener('mousedown', ondrag)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       ref.current.removeEventListener('mouseup', onUp)
     }
   }, [])
