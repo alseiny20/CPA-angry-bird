@@ -1,8 +1,8 @@
 import exp from "constants";
 
-export const brique_numbers = 20;
-export const ball_none_numbers = 0;
-export const ball_numbers = 111;
+export const brique_numbers = 0;
+export const ball_none_numbers = 1;
+export const ball_numbers = 0;
 
 export const AIR_FRICTION = 0.996; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
 
@@ -16,7 +16,7 @@ export const PLAYERLIFE = 10;
 export const AIR_FRICTION_DESCENDING = 0.999; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
 export const AIR_FRICTION_ASCENDING = 0.995; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
 export const AIR_FRICTION_HORIZONTAL = 0.998; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
-export const SQUARE_RESTITUTION= 0.99; // Friction sur les squares ajustable vu qu'on a pas la velocity de l'objet
+export const SQUARE_RESTITUTION= 1; // Friction sur les squares ajustable vu qu'on a pas la velocity de l'objet
 
 export const GRAVITY = 0.3; // Ajustable vu qu'on a pas la notion de poid
 export const DAMPING = 0.75; // Coefficient du perte d'energy lors d'une collision avec bord ou sol

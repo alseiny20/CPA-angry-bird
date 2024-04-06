@@ -14,20 +14,28 @@ const initCanvas =
     requestAnimationFrame(() => iterate(ctx))
   }
   
-
+ 
 const Canvas = ({ height, width }: { height: number; width: number }) => {
-  let myArrayBall = new Array(conf.ball_none_numbers).fill(null).map((_) => ({
+  let tabCoord = [
+    { x: 50, y: 50 },
+    { x: 80, y: 50 },
+    { x: 110, y: 50 },
+    { x: 140, y: 50 },
+  ];
+  
+  let myArrayBall = tabCoord.map(coord => ({
     life: conf.BALLLIFE,
     resting: true,
     weight: 2,
     coord: {
-      x: randomInt(width),
-      y: height - 500,
+      x: coord.x,
+      y: coord.y,
       dx: 0,
       dy: 0
     },
     color: '#ff0000',
   }))
+  
   // Création et ajout de six nouvelles balles à myArray
   const newBalls = new Array(conf.ball_numbers).fill(null).map((_) => ({
     life: conf.BALLLIFE,

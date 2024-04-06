@@ -110,6 +110,8 @@ const computeColor = (life: number, maxLife: number, baseColor: string) =>
     state.briques.forEach((b) => {
       drawBrique(ctx, b.coord, b.width, b.height, computeBriqueColor(b.life, b.color || COLORS.RED));
     });
+
+    // Dessiner les balles 
   
     // Afficher le texte de fin si le jeu est terminé
     if (state.endOfGame) {
