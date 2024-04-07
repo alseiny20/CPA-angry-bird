@@ -3,8 +3,8 @@ import { useRef, useEffect } from 'react'
 import { State, step, click, mouseMove, endOfGame, mousedown, mouseup } from './state'
 import { render } from './renderer'
 
-const randomInt = (max: number) => Math.floor(Math.random() * max)
-const randomSign = () => Math.sign(Math.random() - 0.5)
+export const randomInt = (max: number) => Math.floor(Math.random() * max)
+export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
 
 const initCanvas =
   (iterate: (ctx: CanvasRenderingContext2D) => void) =>
@@ -13,31 +13,49 @@ const initCanvas =
     if (!ctx) return
     requestAnimationFrame(() => iterate(ctx))
   }
-  
+function randomChoice<T>(list: T[]): T {
+    const index = Math.floor(Math.random() * list.length);
+    return list[index];
+}
  
 const Canvas = ({ height, width }: { height: number; width: number }) => {
-  let tabCoord = [
-    { x: 50, y: 50 },
-    { x: 80, y: 50 },
-    { x: 110, y: 50 },
-    { x: 140, y: 50 },
-  ];
+ 
+  // intialisation des balles
+  let position = 20;
+  const getPosition = () => {
+    position = position + 60;
+    return position;
+  }
   
-  let myArrayBall = tabCoord.map(coord => ({
+  // var radius =  30;
+  // const getRadius = () => {
+  //   radius = randomInt(40)
+  //   return radius;
+  // }
+
+  // const getAlpha = () => {
+  //   return (radius * 5) /150;
+  // }
+
+  let reserveBall = new Array(conf.ball_none_numbers).fill(null).map((coord) => ({
     life: conf.BALLLIFE,
     resting: true,
-    weight: 2,
+    target: true,
+    weight: 1.2,
     coord: {
-      x: coord.x,
-      y: coord.y,
+      x: getPosition(),
+      y: 50,
       dx: 0,
       dy: 0
     },
+    radius: conf.RADIUS,
+    alpha: 1,
     color: '#ff0000',
+    image: randomChoice(conf.IMAGE_BALL_ALL)
   }))
   
   // Création et ajout de six nouvelles balles à myArray
-  const newBalls = new Array(conf.ball_numbers).fill(null).map((_) => ({
+  const balls = new Array(conf.ball_numbers).fill(null).map((_) => ({
     life: conf.BALLLIFE,
     weight: 2,
     resting: true,
@@ -48,6 +66,8 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
       dy: randomSign() * randomInt(10)
     },
     color: '#00ff00', // Couleur verte pour les nouvelles balles
+    image: randomChoice(conf.IMAGE_BALL_ALL)
+
   }));
 
   let myArrayBriques = new Array(conf.brique_numbers).fill(null).map((_) => ({
@@ -79,11 +99,30 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
   // })));
 
   // Concaténation des nouvelles balles à l'array existant
-  myArrayBall = myArrayBall.concat(newBalls);
+  // myArrayBall = myArrayBall.concat(newBalls);
+
+  // let target_ball = {
+  //   life: conf.BALLLIFE,
+  //   weight: 1.5,
+  //   resting: true,
+  //   target: true,
+  //   coord: {
+  //     x: conf.COORD_TARGET.x,
+  //     y: conf.COORD_TARGET.y,
+  //     dx: 0,
+  //     dy: 0,
+  //   },
+  //   color: '#00ff00', // Couleur verte pour les nouvelles balles
+  // };
+
+  // balls.push(target_ball);
+
 
   const initialState: State = {
-    pos: myArrayBall,
+    target: null,
+    pos: balls,
     briques: myArrayBriques,
+    reserves: reserveBall,
     size: { height, width },
     endOfGame: true,
   }

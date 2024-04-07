@@ -3,13 +3,14 @@ import Loader from './components/loader'
 import Canvas from './components/canvas'
 import './App.css'
 
-type Size = {
+export type Size = {
   height: number
   width: number
 }
 const App = () => {
   const [size, setSize] = useState<Size | null>(null)
   const container = useRef<any>()
+  
   useEffect(() => {
     setTimeout(() => {
       setSize({

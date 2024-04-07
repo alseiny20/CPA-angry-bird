@@ -1,14 +1,19 @@
+import { stat } from 'fs';
 import * as conf from './conf'
 type Coord = { x: number; y: number; dx: number; dy: number }
 type Ball = {
   coord: Coord;
   life: number;
   weight: number; // Ajout du poids de la balle
+  target?: boolean; //;
   resting?: boolean;
   initDrag?: Coord;
   selectect?: boolean;
   invincible?: number;
   color?: string;
+  image?: string;
+  radius?: number;
+  alpha?: number;
 };
 
 type Brique = {
@@ -21,16 +26,20 @@ type Brique = {
   selectect?: boolean;
   invincible?: number;
   color?: string;
+  image?: string;
 };
+
 type Size = { height: number; width: number }
+
 export type State = {
   pos: Array<Ball>
   briques : Array<Brique>
+  reserves: Array<Ball>
+  target: Ball | null
   size: Size
   endOfGame: boolean
 }
-
-var beginOfGame = false;
+var inTurn = true;
 
 const dist2 = (o1: Coord, o2: Coord) =>
   Math.pow(o1.x - o2.x, 2) + Math.pow(o1.y - o2.y, 2)
@@ -91,10 +100,6 @@ const dist2 = (o1: Coord, o2: Coord) =>
                 coord.dx = 0;
             }
         }
-    } else {
-      if (beginOfGame) {
-        ball.resting = false;
-      }
     }
 
     ball.invincible = ball.invincible ? ball.invincible - 1 : 0;
@@ -102,22 +107,16 @@ const dist2 = (o1: Coord, o2: Coord) =>
     // Ajuster la position si nécessaire avec checkPossibleMove
     // const adjustedPos = checkPossibleMove(ball, briques, bound);
 
-
-
-
     return {
         ...ball,
         coord: coord
     };
 };
 
-  
   const iterate2 = (bound: Size) => (ball: Brique) => {
     return ball;
   }
   
-
-
 const collide = (o1: Coord, o2: Coord) =>
   dist2(o1, o2) < Math.pow(2 * conf.RADIUS, 2)
 
@@ -280,9 +279,26 @@ function adjustPosition(initial: Coord, target: Coord, obstacleX: number, obstac
 }
 
 
-
+const choose_new_target = (state: State) => {
+  const newTarget = state.reserves.pop();
+  if (newTarget) {
+    return {
+      ...state,
+      target: {...newTarget, coord: { ...conf.COORD_TARGET, dx: 0, dy: 0 }},
+      pos: [...state.pos, {...newTarget, coord: { ...conf.COORD_TARGET, dx: 0, dy: 0 }}],
+    };
+  }
+  return state;
+};
 
 export const step = (state: State) => {
+  if (!inTurn){
+    if (state.pos.length === 0 && state.briques.length === 0 && state.reserves.length === 0 && state.target === null){
+      return {...state, endOfGame: true};
+    }
+    state = choose_new_target(state);
+  }
+
   state.pos.map((p1, i, arr) => {
     arr.slice(i + 1).map((p2) => {
       if (collide(p1.coord, p2.coord)) {
@@ -310,15 +326,38 @@ export const step = (state: State) => {
     });
   })
 
-
   
-  return {
-    ...state,
-    pos: state.pos.map(ball => iterate(state.size)(ball, state.briques)).filter((p) => p.life > 0),
-    briques: state.briques.map(iterate2(state.size)).filter((p) => p.life > 0),
-  }
-}
+  inTurn = !check_endTurn(state)
 
+  var balls = state.pos.map(ball => iterate(state.size)(ball, state.briques)).filter((p) => p.life > 0);
+
+  if (!inTurn) {
+    balls = balls.filter((ball) => ball.target === false || !ball.target)
+  }
+
+  const newState = {
+    ...state,
+    pos: balls,
+    briques: state.briques.map(iterate2(state.size)).filter(p => p.life > 0),
+  };
+
+  return newState;
+};
+const hasMoved = (obj: Ball | Brique) => obj.coord.dx !== 0 || obj.coord.dy !== 0;
+
+const check_endTurn = (state: State) => {
+  const ballsMoved = state.pos.some(hasMoved);
+  const briquesMoved = state.briques.some(hasMoved);
+  
+  return !ballsMoved && !briquesMoved && state.target === null;
+};
+
+// const check_endGame = (state: State) => {
+//   if ((state.pos.length === 0 && state.briques.length === 0) && (state.reserves.length === 0 && state.target === null)) {
+//     return true
+//   }
+//   return false
+// }
 
 export const click =
   (state: State) =>
@@ -353,44 +392,59 @@ export const mousedown =
     return state
   }
 
-export const mouseMove =
-  (state: State) =>
-  (event: PointerEvent): State => {
-    const { offsetX, offsetY } = event
-    const target = state.pos.find(
-      (p) =>
-        p.selectect === true
-    )
-    if (target && target.selectect) {
-      target.coord.x = offsetX
-      target.coord.y = offsetY
-    }
-    return state
-  }
+  export const mouseMove = (state: State) => (event: PointerEvent): State => {
+    const { offsetX, offsetY } = event;
+    const target = state.pos.find((p) => p.selectect === true);
 
-export const mouseup =
-  (state: State) =>
-  (event: PointerEvent): State => {
-    const { offsetX, offsetY } = event
-    console.log("voila")
-    const target = state.pos.find(
-      (p) =>
-        p.selectect === true,
-    )
-    if (target) {
-      if (target.initDrag){
-        target.selectect = false
-        target.coord.dx = (target.initDrag.x - offsetX) / 10
-        target.coord.dy = (target.initDrag.y - offsetY) / 10
-        console.log(target.coord.x , target.coord.y)
-        console.log(target.coord.dx , target.coord.dy)
-        console.log("released", target.coord)
-      }
+    if (target && target.selectect && target.initDrag) {
+        const dx = offsetX - target.initDrag.x;
+        const dy = offsetY - target.initDrag.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        console.log('distance', distance);
+
+        if (distance < conf.MAX_DISTANCE) {
+            target.coord.x = offsetX;
+            target.coord.y = offsetY;
+        } else {
+            // on recupere la direction du vecteur de distance
+            const dirX = dx / distance;
+            const dirY = dy / distance;
+
+            // on limite la distance maximale du drag 
+            target.coord.x = target.initDrag.x + dirX * conf.MAX_DISTANCE;
+            target.coord.y = target.initDrag.y + dirY * conf.MAX_DISTANCE;
+        }
     }
 
-    beginOfGame = true;
-    console.log("event", event.x, event.y)
-    return state
-  }
+    return state;
+};
+
+
+export const mouseup = (state: State) => (event: PointerEvent): State => {
+  const { offsetX, offsetY } = event;
+  console.log('mouseup', offsetX, offsetY)
+
+  let isBeginOfGame = false;
+
+  const updatedPos = state.pos.map((p) => {
+    if (p.selectect) {
+      const dx = p.initDrag ? (p.initDrag.x - p.coord.x) / 10 : p.coord.dx;
+      const dy = p.initDrag ? (p.initDrag.y - p.coord.y) / 10 : p.coord.dy;
+      console.log('drag', dx, dy);
+      isBeginOfGame = true;
+
+      return {
+        ...p,
+        selectect: false,
+        coord: { ...p.coord, dx, dy },
+        resting: p.target ? false : p.resting,
+      };
+    }
+    return p;
+  });
+
+  return { ...state, pos: updatedPos, target:  isBeginOfGame ? null : state.target };
+};
+
 
 export const endOfGame = (state: State): boolean => true
