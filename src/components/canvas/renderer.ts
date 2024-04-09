@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State } from './state';
+import { State, Coord } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -81,6 +81,19 @@ const drawBrique = (
   ctx.fill();
 };
 
+const drawShoot = (
+  ctx: CanvasRenderingContext2D,
+  shoot: Array<{ x: number; y: number }>
+) => {
+  shoot.forEach((p) => { 
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+
 var initPos = false;
 export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   clear(ctx);
@@ -141,6 +154,11 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     ctx.moveTo(conf.COORD_TARGET.x + 40, conf.COORD_TARGET.y + 10); // Start point
     ctx.lineTo(positionTire.x + space_ball, positionTire.y + 10); // End point at the slingshot pouch
     ctx.stroke(); // Draw the path
+
+    if(state.target && state.shoot){
+      drawShoot(ctx, state.shoot);
+      console.log("shooting", state.shoot);
+    }
 
     // console.log("**<>",target?.selectect);
     // console.log("**<>",positionTire.x,conf.COORD_TARGET.x,positionTire.y,conf.COORD_TARGET.y);

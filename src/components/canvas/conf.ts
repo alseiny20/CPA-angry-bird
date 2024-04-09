@@ -19,6 +19,7 @@ export const IMAGE_BALL_ALL = [IMAGE_MELODY, IMAGE_BOMB, IMAGE_RED, IMAGE_CHUCK,
 export const RADIUS = 30;
 export const MINMOVE = 0.7;
 export const MAX_DISTANCE = 160; // maximum shoot Vitesse initial 
+export const MAX_PATH = 40; // maximum trajectory prevision
 
 export const BALLLIFE = 1114;
 export const BRIQUELIFE = 1111111118;

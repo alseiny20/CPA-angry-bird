@@ -123,6 +123,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     pos: balls,
     briques: myArrayBriques,
     reserves: reserveBall,
+    shoot: null,
     size: { height, width },
     endOfGame: true,
   }

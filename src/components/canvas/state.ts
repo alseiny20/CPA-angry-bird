@@ -1,6 +1,7 @@
 import { stat } from 'fs';
 import * as conf from './conf'
-type Coord = { x: number; y: number; dx: number; dy: number }
+import path from 'path';
+export type Coord = { x: number; y: number; dx: number; dy: number }
 type Ball = {
   coord: Coord;
   life: number;
@@ -36,6 +37,7 @@ export type State = {
   briques : Array<Brique>
   reserves: Array<Ball>
   target: Ball | null
+  shoot: Array<Coord> | null
   size: Size
   endOfGame: boolean
 }
@@ -45,9 +47,10 @@ const dist2 = (o1: Coord, o2: Coord) =>
   Math.pow(o1.x - o2.x, 2) + Math.pow(o1.y - o2.y, 2)
 
   const iterate = (bound: Size) => (ball: Ball, briques: Array<Brique>) => {
-    if (ball.selectect) {
-        return ball;
-    }
+    // if (ball.selectect) {
+    //     console.log('balllong', ball.selectect);
+    //     return ball;
+    // }
 
     let coord = { ...ball.coord };
 
@@ -335,6 +338,8 @@ export const step = (state: State) => {
     balls = balls.filter((ball) => ball.target === false || !ball.target)
   }
 
+  // s'il ya un shoot en cour met a jour la trajectoir
+  
   const newState = {
     ...state,
     pos: balls,
@@ -343,6 +348,17 @@ export const step = (state: State) => {
 
   return newState;
 };
+
+function findPath(target: Ball): Array<Coord> {
+  var path = new Array<Coord>()
+  var ball = { ...target }
+  for (var i = 0; i < conf.MAX_PATH; i++) {
+    path.push({ x: ball.coord.x, y: ball.coord.y, dx: ball.coord.dx, dy: ball.coord.dy })
+    ball = iterate({ height: 5000, width: 5000 })(ball, [])
+    ball = iterate({ height: 5000, width: 5000 })(ball, [])
+  }
+  return path
+}
 const hasMoved = (obj: Ball | Brique) => obj.coord.dx !== 0 || obj.coord.dy !== 0;
 
 const check_endTurn = (state: State) => {
@@ -414,7 +430,18 @@ export const mousedown =
             target.coord.x = target.initDrag.x + dirX * conf.MAX_DISTANCE;
             target.coord.y = target.initDrag.y + dirY * conf.MAX_DISTANCE;
         }
+
+        // on trace le chemin shoot
+        const path = findPath(
+          {...target,
+             resting: false,
+             coord: {
+             x: target.coord.x, y: target.coord.y, dx: 
+             (target.initDrag.x - target.coord.x) / 10, dy: (target.initDrag.y - target.coord.y) / 10 }});
+        console.log('babal',path);
+        return { ...state, pos: state.pos, shoot: path };
     }
+
 
     return state;
 };
@@ -440,11 +467,13 @@ export const mouseup = (state: State) => (event: PointerEvent): State => {
         resting: p.target ? false : p.resting,
       };
     }
-    return p;
+    return p
   });
 
-  return { ...state, pos: updatedPos, target:  isBeginOfGame ? null : state.target };
+  return { ...state, pos: updatedPos, shoot: null, target:  isBeginOfGame ? null : state.target };
 };
 
 
-export const endOfGame = (state: State): boolean => true
+export const endOfGame = (state: State): boolean => {
+  return !(state.reserves.length === 0 && (state.pos.filter((p) => p.coord.dx !== 0 && p.coord.dy !== 0).length === 0 && state.target === null));
+}
