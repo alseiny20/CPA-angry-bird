@@ -21,6 +21,8 @@ type Brique = {
   coord: Coord; 
   width: number;
   height: number;
+  
+  weight: number; // Ajout du poids de la brique
   life: number;
   resting?: boolean;
   initDrag?: Coord;
@@ -116,8 +118,54 @@ const dist2 = (o1: Coord, o2: Coord) =>
     };
 };
 
-  const iterate2 = (bound: Size) => (ball: Brique) => {
-    return ball;
+  const iterate2 = (bound: Size) => (brique: Brique) => {
+    // return brique;
+    // Check if the brick is resting, don't update its position if it's resting
+  if (brique.resting) {
+    return brique;
+  }
+  let coord = { ...brique.coord };
+
+  // appliation la gravité
+  if (!brique.resting) {
+      coord.dy += conf.GRAVITY * brique.weight;
+  }
+
+  // résistance de l'air de manière différente selon la direction
+  if (coord.dy > 0) {
+      // Descendre : la résistance de l'air ralentit moins la balle
+      coord.dy *= conf.AIR_FRICTION_DESCENDING;
+  } else {
+      // Monter : la résistance de l'air ralentit plus la balle
+      coord.dy *=  conf.AIR_FRICTION_ASCENDING;
+  }
+
+  // résistance de l'air horizontalement
+  coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
+  // Update the position of the brick based on its velocity
+  coord.x += brique.coord.dx;
+  coord.y += brique.coord.dy;
+
+  // Check for collisions with boundaries and adjust if necessary
+  // Implement collision logic with boundaries if needed
+
+  // Check for collisions with the left or right boundaries
+  if (coord.x < 0 || coord.x + brique.width > bound.width) {
+    brique.coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the horizontal velocity
+    coord.x = Math.max(coord.x, 0);
+    coord.x = Math.min(coord.x, bound.width - brique.width);
+  }
+
+  // Check for collisions with the top or bottom boundaries
+  if (coord.y < 0 || coord.y + brique.height > bound.height) {
+    brique.coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the vertical velocity
+    coord.y = Math.max(coord.y, 0);
+    coord.y = Math.min(coord.y, bound.height - brique.height);
+  }
+  return {
+    ...brique,
+    coord: coord,
+  };
   }
   
 const collide = (o1: Coord, o2: Coord) =>
@@ -182,33 +230,50 @@ const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
     return;
   }
 
-  // Déterminer le côté de la brique sur lequel la collision a eu lieu
-  let collisionSide = determineCollisionSide(ball, brique);
-  let normalX = - 5, normalY = -5;
+  // // Déterminer le côté de la brique sur lequel la collision a eu lieu
+  // let collisionSide = determineCollisionSide(ball, brique);
+  // // let normalX = - 5, normalY = -5;
+  // let normalX = 0, normalY = 0;
+  // // Ajuster la position de la balle pour éviter qu'elle ne soit plus en collision avec la brique
+  // if (collisionSide === 'left') {
+  //   normalX = -1; normalY = 0;
+  //   ball.coord.x = brique.coord.x - conf.RADIUS;
+  // } else if (collisionSide === 'right') {
+  //   normalX = 1; normalY = 0;
+  //   ball.coord.x = brique.coord.x + brique.width + conf.RADIUS;
+  // } else if (collisionSide === 'top') {
+  //   normalX = 0; normalY = -1;
+  //   ball.coord.y = brique.coord.y - conf.RADIUS;
+  // } else if (collisionSide === 'bottom') {
+  //   normalX = 0; normalY = 1;
+  //   ball.coord.y = brique.coord.y + brique.height + conf.RADIUS;
+  // }
 
-  // Ajuster la position de la balle pour éviter qu'elle ne soit plus en collision avec la brique
+  // // Inversersion la composante de la vitesse de la balle qui est parallèle à la normale
+  // const dotProduct = ball.coord.dx * normalX + ball.coord.dy * normalY;
+  // ball.coord.dx -= 2 * dotProduct * normalX;
+  // ball.coord.dy -= 2 * dotProduct * normalY;
+
+  // //coefficient de restitution pour le rebond
+  // ball.coord.dx *= conf.SQUARE_RESTITUTION;
+  // ball.coord.dy *= conf.SQUARE_RESTITUTION;
+  
+  // Determine the side of the brick where the collision occurred
+  let collisionSide = determineCollisionSide(ball, brique);
+
+  // Adjust the position of the ball to prevent it from being in collision with the brick
   if (collisionSide === 'left') {
-    normalX = -1; normalY = 0;
     ball.coord.x = brique.coord.x - conf.RADIUS;
   } else if (collisionSide === 'right') {
-    normalX = 1; normalY = 0;
     ball.coord.x = brique.coord.x + brique.width + conf.RADIUS;
   } else if (collisionSide === 'top') {
-    normalX = 0; normalY = -1;
     ball.coord.y = brique.coord.y - conf.RADIUS;
   } else if (collisionSide === 'bottom') {
-    normalX = 0; normalY = 1;
     ball.coord.y = brique.coord.y + brique.height + conf.RADIUS;
   }
-
-  // Inversersion la composante de la vitesse de la balle qui est parallèle à la normale
-  const dotProduct = ball.coord.dx * normalX + ball.coord.dy * normalY;
-  ball.coord.dx -= 2 * dotProduct * normalX;
-  ball.coord.dy -= 2 * dotProduct * normalY;
-
-  //coefficient de restitution pour le rebond
-  ball.coord.dx *= conf.SQUARE_RESTITUTION;
-  ball.coord.dy *= conf.SQUARE_RESTITUTION;
+  // // Push the brick in the opposite direction of the collision
+  brique.coord.dx += ball.coord.dx;
+  brique.coord.dy += ball.coord.dy;
 
   // update la vie de la brique
   brique.life -= 1;
@@ -327,9 +392,24 @@ export const step = (state: State) => {
         }
       });
     });
+   
   })
 
-  
+  state.briques.forEach((p1, i, arr) => {
+    arr.slice(i + 1).map((p2) => {
+      if (collide(p1.coord, p2.coord)) {
+        if (!p1.invincible) {
+          p1.life--
+          p1.invincible = 20
+        }
+        if (!p2.invincible) {
+          p2.life--
+          p2.invincible = 20
+        }
+        collideBoing(p1.coord, p2.coord)
+      }
+    })
+  })
   inTurn = !check_endTurn(state)
 
   var balls = state.pos.map(ball => iterate(state.size)(ball, state.briques)).filter((p) => p.life > 0);
@@ -363,9 +443,9 @@ const hasMoved = (obj: Ball | Brique) => obj.coord.dx !== 0 || obj.coord.dy !== 
 
 const check_endTurn = (state: State) => {
   const ballsMoved = state.pos.some(hasMoved);
-  const briquesMoved = state.briques.some(hasMoved);
+  // const briquesMoved = state.briques.some(hasMoved);
   
-  return !ballsMoved && !briquesMoved && state.target === null;
+  return !ballsMoved /* && !briquesMoved */ && state.target === null;
 };
 
 // const check_endGame = (state: State) => {

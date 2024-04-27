@@ -74,15 +74,28 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     life : conf.BRIQUELIFE,
     weight : 50,
     coord: {
-      x: randomInt(width),
-      y: randomInt(height),
+      x: 1000,//randomInt(width),
+      y: 500,//randomInt(height),
       dx: 0,
       dy: 0
     },
-    width: 50,
-    height: randomInt(100),
+    width: 100,
+    height: 100,//randomInt(100),
     color: '#0000ff', // Couleur bleue pour les briques
-  }));
+  })).concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
+  
+      life : conf.BRIQUELIFE,
+      weight : 50,
+      coord: {
+        x: 1150,//randomInt(width),
+        y: 500,//randomInt(height),
+        dx: 0,
+        dy: 0
+      },
+      width: 100,
+      height: 100,//randomInt(100),
+      color: '#0000ff', // Couleur bleue pour les briques
+    })));
 
   // myArrayBriques = myArrayBriques.concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
   //   life : conf.BRIQUELIFE,
