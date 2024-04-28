@@ -2,7 +2,7 @@ import { stat } from 'fs';
 import * as conf from './conf'
 import path from 'path';
 export type Coord = { x: number; y: number; dx: number; dy: number }
-type Ball = {
+export type Ball = {
   coord: Coord;
   life: number;
   weight: number; // Ajout du poids de la balle
@@ -16,12 +16,24 @@ type Ball = {
   radius?: number;
   alpha?: number;
 };
-
-type Brique = {
+export type Pig = {
+  coord: Coord;
+  life: number;
+  weight: number; // Ajout du poids de la balle
+  target?: boolean; //;
+  resting?: boolean;
+  initDrag?: Coord;
+  selectect?: boolean;
+  invincible?: number;
+  color?: string;
+  image?: string;
+  radius?: number;
+  alpha?: number;
+};
+export type Brique = {
   coord: Coord; 
   width: number;
   height: number;
-  
   weight: number; // Ajout du poids de la brique
   life: number;
   resting?: boolean;
@@ -36,6 +48,7 @@ type Size = { height: number; width: number }
 
 export type State = {
   pos: Array<Ball>
+  pigs: Array<Pig>
   briques : Array<Brique>
   reserves: Array<Ball>
   target: Ball | null
@@ -118,55 +131,158 @@ const dist2 = (o1: Coord, o2: Coord) =>
     };
 };
 
-  const iterate2 = (bound: Size) => (brique: Brique) => {
+  const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Brique>) => {
     // return brique;
     // Check if the brick is resting, don't update its position if it's resting
-  if (brique.resting) {
-    return brique;
+    if (brique.resting) {
+      return brique;
+    }
+    let coord = { ...brique.coord };
+
+    // appliation la gravité
+    if (!brique.resting) {
+        coord.dy += conf.GRAVITY * brique.weight;
+    }
+
+    // résistance de l'air de manière différente selon la direction
+    if (coord.dy > 0) {
+        // Descendre : la résistance de l'air ralentit moins la balle
+        coord.dy *= conf.AIR_FRICTION_DESCENDING;
+    } else {
+        // Monter : la résistance de l'air ralentit plus la balle
+        coord.dy *=  conf.AIR_FRICTION_ASCENDING;
+    }
+
+    // résistance de l'air horizontalement
+    coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
+    // Update the position of the brick based on its velocity
+    coord.x += brique.coord.dx;
+    coord.y += brique.coord.dy;
+
+    // Check for collisions with boundaries and adjust if necessary
+    // Implement collision logic with boundaries if needed
+
+    // Check for collisions with the left or right boundaries
+    if (coord.x < 0 || coord.x + brique.width > bound.width) {
+      brique.coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the horizontal velocity
+      coord.x = Math.max(coord.x, 0);
+      coord.x = Math.min(coord.x, bound.width - brique.width);
+    }
+
+    // Check for collisions with the top or bottom boundaries
+    if (coord.y < 0 || coord.y + brique.height > bound.height) {
+      brique.coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the vertical velocity
+      coord.y = Math.max(coord.y, 0);
+      coord.y = Math.min(coord.y, bound.height - brique.height);
+    }
+      // Handle collisions with other bricks
+    otherBriques.forEach((other) => {
+      if (brique !== other && collide(brique.coord, other.coord)) {
+        handleBriqueCollision2(brique, other);
+        // resolveBriqueOverlap(brique, other);
+        collideBoing(brique.coord, other.coord);
+      }
+    });
+    
+  // Check if resting on ground or on top of another brick
+  const restingOnGround = coord.y + brique.height >= bound.height;
+  const restingOnOtherBrick = otherBriques.some((other) => {
+    return (
+      brique !== other &&
+      coord.y + brique.height >= other.coord.y &&
+      coord.y <= other.coord.y + other.height &&
+      // Check horizontal overlap to prevent sideways stacking
+      coord.x + brique.width > other.coord.x &&
+      coord.x < other.coord.x + other.width
+    );
+  });
+
+  // Adjust position if resting on another brick or ground
+  if (restingOnGround || restingOnOtherBrick) {
+    coord.dy = 0; // Stop vertical movement
+    // Adjust vertical position to stack bricks
+    coord.y = restingOnGround
+      ? bound.height - brique.height // Resting on ground
+      : Math.min(
+          ...otherBriques
+            .filter(
+              (other) =>
+                brique !== other &&
+                coord.y + brique.height >= other.coord.y &&
+                coord.y <= other.coord.y + other.height &&
+                coord.x + brique.width > other.coord.x &&
+                coord.x < other.coord.x + other.width
+            )
+            .map((other) => other.coord.y - brique.height)
+        );
   }
-  let coord = { ...brique.coord };
-
-  // appliation la gravité
-  if (!brique.resting) {
-      coord.dy += conf.GRAVITY * brique.weight;
-  }
-
-  // résistance de l'air de manière différente selon la direction
-  if (coord.dy > 0) {
-      // Descendre : la résistance de l'air ralentit moins la balle
-      coord.dy *= conf.AIR_FRICTION_DESCENDING;
-  } else {
-      // Monter : la résistance de l'air ralentit plus la balle
-      coord.dy *=  conf.AIR_FRICTION_ASCENDING;
-  }
-
-  // résistance de l'air horizontalement
-  coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
-  // Update the position of the brick based on its velocity
-  coord.x += brique.coord.dx;
-  coord.y += brique.coord.dy;
-
-  // Check for collisions with boundaries and adjust if necessary
-  // Implement collision logic with boundaries if needed
-
-  // Check for collisions with the left or right boundaries
-  if (coord.x < 0 || coord.x + brique.width > bound.width) {
-    brique.coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the horizontal velocity
-    coord.x = Math.max(coord.x, 0);
-    coord.x = Math.min(coord.x, bound.width - brique.width);
-  }
-
-  // Check for collisions with the top or bottom boundaries
-  if (coord.y < 0 || coord.y + brique.height > bound.height) {
-    brique.coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;  // Reverse and dampen the vertical velocity
-    coord.y = Math.max(coord.y, 0);
-    coord.y = Math.min(coord.y, bound.height - brique.height);
-  }
-  return {
-    ...brique,
-    coord: coord,
+    return {
+      ...brique,
+      coord: coord,
+    };
   };
-  }
+
+
+  const iteratePig = (bound: Size) => (pig: Pig) => {
+    let coord = { ...pig.coord };
+
+    // appliation la gravité
+    if (!pig.resting) {
+        coord.dy += conf.GRAVITY * pig.weight;
+    }
+
+    // résistance de l'air de manière différente selon la direction
+    if (coord.dy > 0) {
+        // Descendre : la résistance de l'air ralentit moins la balle
+        coord.dy *= conf.AIR_FRICTION_DESCENDING;
+    } else {
+        // Monter : la résistance de l'air ralentit plus la balle
+        coord.dy *=  conf.AIR_FRICTION_ASCENDING;
+    }
+
+    // résistance de l'air horizontalement
+    coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
+
+    // Mise à jour des positions
+    coord.x += coord.dx;
+    coord.y += coord.dy;
+
+    // Gestion des collisions avec les bords horizontaux et amortissement
+    if (coord.x - conf.RADIUS < 0 || coord.x + conf.RADIUS > bound.width) {
+        coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;
+        coord.x = Math.max(coord.x, conf.RADIUS);
+        coord.x = Math.min(coord.x, bound.width - conf.RADIUS);
+    }
+    
+    // Gestion des collisions avec le bord supérieur et amortissement
+    if (coord.y - conf.RADIUS < 0) {
+        coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;
+        coord.y = Math.max(coord.y, conf.RADIUS);
+    }
+
+    // Gestion des collisions avec le sol, amortissement et frottement
+    if (coord.y + conf.RADIUS >= bound.height) {
+        coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;
+        coord.y = bound.height - conf.RADIUS;
+
+        // Appliquer le frottement au sol si la balle est au repos
+        if (Math.abs(coord.dy) < conf.VELOCITY_THRESHOLD) {
+            coord.dy = 0;
+            pig.resting = true;
+            if (Math.abs(coord.dx) > conf.VELOCITY_THRESHOLD) {
+                coord.dx *= conf.GROUND_FRICTION;
+            } else {
+                coord.dx = 0;
+            }
+        }
+    }
+
+    pig.invincible = pig.invincible ? pig.invincible - 1 : 0;
+    return {
+      ...pig,
+      coord: coord,
+    };
+  };
   
 const collide = (o1: Coord, o2: Coord) =>
   dist2(o1, o2) < Math.pow(2 * conf.RADIUS, 2)
@@ -222,41 +338,13 @@ const checkBallBriqueCollision = (circle: Ball, rect: Brique) => {
     return true;
   }
   return false;
-}
+};
 
 const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
   if (!checkBallBriqueCollision(ball, brique)) {
     console.log("handleBallBriqueCollision: no collision detected");
     return;
   }
-
-  // // Déterminer le côté de la brique sur lequel la collision a eu lieu
-  // let collisionSide = determineCollisionSide(ball, brique);
-  // // let normalX = - 5, normalY = -5;
-  // let normalX = 0, normalY = 0;
-  // // Ajuster la position de la balle pour éviter qu'elle ne soit plus en collision avec la brique
-  // if (collisionSide === 'left') {
-  //   normalX = -1; normalY = 0;
-  //   ball.coord.x = brique.coord.x - conf.RADIUS;
-  // } else if (collisionSide === 'right') {
-  //   normalX = 1; normalY = 0;
-  //   ball.coord.x = brique.coord.x + brique.width + conf.RADIUS;
-  // } else if (collisionSide === 'top') {
-  //   normalX = 0; normalY = -1;
-  //   ball.coord.y = brique.coord.y - conf.RADIUS;
-  // } else if (collisionSide === 'bottom') {
-  //   normalX = 0; normalY = 1;
-  //   ball.coord.y = brique.coord.y + brique.height + conf.RADIUS;
-  // }
-
-  // // Inversersion la composante de la vitesse de la balle qui est parallèle à la normale
-  // const dotProduct = ball.coord.dx * normalX + ball.coord.dy * normalY;
-  // ball.coord.dx -= 2 * dotProduct * normalX;
-  // ball.coord.dy -= 2 * dotProduct * normalY;
-
-  // //coefficient de restitution pour le rebond
-  // ball.coord.dx *= conf.SQUARE_RESTITUTION;
-  // ball.coord.dy *= conf.SQUARE_RESTITUTION;
   
   // Determine the side of the brick where the collision occurred
   let collisionSide = determineCollisionSide(ball, brique);
@@ -271,7 +359,6 @@ const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
   } else if (collisionSide === 'bottom') {
     ball.coord.y = brique.coord.y + brique.height + conf.RADIUS;
   }
-  // // Push the brick in the opposite direction of the collision
   brique.coord.dx += ball.coord.dx;
   brique.coord.dy += ball.coord.dy;
 
@@ -279,7 +366,14 @@ const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
   brique.life -= 1;
 };
 
+const handleBallPigCollision = (ball: Ball, pig: Pig) => {
 
+  // // Push the brick in the opposite direction of the collision
+  pig.coord.dx += ball.coord.dx;
+  pig.coord.dy += ball.coord.dy;
+  // update la vie de la brique
+  pig.life -= 1;
+};
 
 function determineCollisionSide(ball: Ball, brique: Brique): string {
   let nearestX = Math.max(brique.coord.x, Math.min(ball.coord.x, brique.coord.x + brique.width));
@@ -359,6 +453,76 @@ const choose_new_target = (state: State) => {
   return state;
 };
 
+
+// Handle collision between rectangular bricks
+const handleBriqueCollision = (brique1: Brique, brique2: Brique) => {
+  // Determine the direction of collision
+  const centerX1 = brique1.coord.x + brique1.width / 2;
+  const centerY1 = brique1.coord.y + brique1.height / 2;
+  const centerX2 = brique2.coord.x + brique2.width / 2;
+  const centerY2 = brique2.coord.y + brique2.height / 2;
+
+  const dx = centerX1 - centerX2;
+  const dy = centerY1 - centerY2;
+
+  // Calculate the absolute differences
+  const absDX = Math.abs(dx);
+  const absDY = Math.abs(dy);
+
+  // Adjust positions based on collision direction
+  if (absDX > absDY) {
+    // Horizontal collision
+    if (dx > 0) {
+      // Collision from the right of brique2
+      brique2.coord.x -= absDX;
+    } else {
+      // Collision from the left of brique2
+      brique2.coord.x += absDX;
+    }
+  } else {
+    // Vertical collision
+    if (dy > 0) {
+      // Collision from below brique2
+      brique2.coord.y -= absDY;
+    } else {
+      // Collision from above brique2
+      brique2.coord.y += absDY;
+    }
+  }
+};// Handle collision between rectangular bricks with reduced lag and ignoring small movements
+// Handle collision between rectangular bricks with reduced lag and small movement tolerance
+// Handle collision between rectangular bricks with velocity adjustment
+const handleBriqueCollision2 = (brique1: Brique, brique2: Brique) => {
+  // Determine the direction of collision
+  const dx = brique1.coord.x + brique1.width / 2 - (brique2.coord.x + brique2.width / 2);
+  const dy = brique1.coord.y + brique1.height / 2 - (brique2.coord.y + brique2.height / 2);
+
+  // Calculate the relative velocities along the collision direction
+  const relativeVelocityX = brique1.coord.dx - brique2.coord.dx;
+  const relativeVelocityY = brique1.coord.dy - brique2.coord.dy;
+
+  // Adjust positions based on collision direction and velocities
+  if (Math.abs(dx) < Math.abs(dy)) {
+    // Horizontal collision
+    if (relativeVelocityX * dx > 0) {
+      // Moving towards each other, adjust positions
+      const adjust = Math.min(Math.abs(dx), Math.abs(relativeVelocityX));
+      const sign = relativeVelocityX > 0 ? 1 : -1;
+      brique1.coord.x -= adjust * sign;
+      brique2.coord.x += adjust * sign;
+    }
+  } else {
+    // Vertical collision
+    if (relativeVelocityY * dy > 0) {
+      // Moving towards each other, adjust positions
+      const adjust = Math.min(Math.abs(dy), Math.abs(relativeVelocityY));
+      const sign = relativeVelocityY > 0 ? 1 : -1;
+      brique1.coord.y -= adjust * sign;
+      brique2.coord.y += adjust * sign;
+    }
+  }
+};
+
 export const step = (state: State) => {
   if (!inTurn){
     if (state.pos.length === 0 && state.briques.length === 0 && state.reserves.length === 0 && state.target === null){
@@ -391,25 +555,34 @@ export const step = (state: State) => {
           // ball.coord = a;
         }
       });
+      state.pigs.forEach((pig) => {
+        if (collide(ball.coord, pig.coord)) {
+          console.log("collision detected");
+          // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
+          handleBallPigCollision(ball, pig);
+          // ball.coord = a;
+        }
+      });
     });
    
   })
 
-  state.briques.forEach((p1, i, arr) => {
-    arr.slice(i + 1).map((p2) => {
-      if (collide(p1.coord, p2.coord)) {
-        if (!p1.invincible) {
-          p1.life--
-          p1.invincible = 20
-        }
-        if (!p2.invincible) {
-          p2.life--
-          p2.invincible = 20
-        }
-        collideBoing(p1.coord, p2.coord)
-      }
-    })
-  })
+  // state.briques.forEach((p1, i, arr) => {
+  //   arr.slice(i + 1).map((p2) => {
+  //     if (checkBriqueCollision(p1, p2)) {
+  //       if (!p1.invincible) {
+  //         p1.life--
+  //         p1.invincible = 20
+  //       }
+  //       if (!p2.invincible) {
+  //         p2.life--
+  //         p2.invincible = 20
+  //       }
+  //       handleBriqueCollision(p1, p2)
+  //     }
+  //   })
+  // })
+  
   inTurn = !check_endTurn(state)
 
   var balls = state.pos.map(ball => iterate(state.size)(ball, state.briques)).filter((p) => p.life > 0);
@@ -423,7 +596,8 @@ export const step = (state: State) => {
   const newState = {
     ...state,
     pos: balls,
-    briques: state.briques.map(iterate2(state.size)).filter(p => p.life > 0),
+    pigs: state.pigs.map(iteratePig(state.size)).filter(p => p.life > 0),
+    briques: state.briques.map((brique: Brique) => iterateBrique(state.size)(brique, state.briques)).filter(p => p.life > 0),
   };
 
   return newState;
@@ -555,5 +729,5 @@ export const mouseup = (state: State) => (event: PointerEvent): State => {
 
 
 export const endOfGame = (state: State): boolean => {
-  return !(state.reserves.length === 0 && (state.pos.filter((p) => p.coord.dx !== 0 && p.coord.dy !== 0).length === 0 && state.target === null));
+  return !(state.reserves.length === 0 && (state.pos.filter((p) => p.coord.dx !== 0 && p.coord.dy !== 0).length === 0 && state.target === null)) || state.pigs.length === 0;
 }

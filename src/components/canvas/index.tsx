@@ -1,10 +1,17 @@
 import * as conf from './conf'
 import { useRef, useEffect } from 'react'
-import { State, step, click, mouseMove, endOfGame, mousedown, mouseup } from './state'
+import { State, step, click, mouseMove, endOfGame, mousedown, mouseup,Pig, Brique} from './state'
 import { render } from './renderer'
-
+// import * as fs from 'fs';
+import * as json from '../../data.json';
 export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
+
+// Chargez le fichier JSON
+// const filePath = './data.json';
+// const jsonFile = fs.readFileSync(filePath);
+const jsonFileString = JSON.stringify(json);
+const config = JSON.parse(jsonFileString);
 
 const initCanvas =
   (iterate: (ctx: CanvasRenderingContext2D) => void) =>
@@ -17,7 +24,70 @@ function randomChoice<T>(list: T[]): T {
     const index = Math.floor(Math.random() * list.length);
     return list[index];
 }
- 
+
+// Fonction pour créer les cochons et les briques en fonction du niveau donné
+// function createEntities(levelId:number) {pigs: Array<Pig>; bricks: Array<Brique>} {
+//   const level = config.levels.find((lvl) => lvl.id === levelId);
+//   if (!level) {
+//     console.error(`Level ${levelId} not found in the configuration.`);
+//     return { pigs: Array, bricks: Array }; // Retourne des tableaux vides si le niveau n'est pas trouvé
+//   }
+//   let pigs = new Array(conf.ball_none_numbers).fill(null).map(level.pigs.map((pigConfig) => ({
+//   // const pigs = level.pigs.map((pigConfig) => ({
+//     life: pigConfig.life,
+//     resting: pigConfig.resting,
+//     target: pigConfig.target,
+//     weight: pigConfig.weight,
+//     coord: pigConfig.coord,
+//     radius: pigConfig.radius,
+//     alpha: pigConfig.alpha,
+//     color: pigConfig.color,
+//     image: pigConfig.image,
+//   })));
+
+//   const bricks = new Array(conf.ball_none_numbers).fill(null).map(level.pigs.map(level.bricks.map((brickConfig) => ({
+//     life: brickConfig.life,
+//     weight: brickConfig.weight,
+//     coord: brickConfig.coord,
+//     width: brickConfig.width,
+//     height: brickConfig.height,
+//     color: brickConfig.color,
+//   })));
+
+//   return { pigs, bricks };
+// }
+// Fonction pour créer les cochons et les briques en fonction du niveau donné
+function createEntities(levelId: number) {
+  const level = config.levels.find((lvl: { id: number }) => lvl.id === levelId);
+  if (!level) {
+    console.error(`Level ${levelId} not found in the configuration.`);
+    return { pigs: [], briques: [] };
+  }
+
+  const pigs: Pig[] = level.pigs.map((pigConfig: { life: any; resting: any; target: any; weight: any; coord: any; radius: any; alpha: any; color: any; image: any }) => ({
+    life: pigConfig.life,
+    resting: pigConfig.resting,
+    target: pigConfig.target,
+    weight: pigConfig.weight,
+    coord: pigConfig.coord,
+    radius: pigConfig.radius,
+    alpha: pigConfig.alpha,
+    color: pigConfig.color,
+    image: pigConfig.image,
+  }));
+
+  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:any}) => ({
+    life: brickConfig.life,
+    weight: brickConfig.weight,
+    coord: brickConfig.coord,
+    width: brickConfig.width,
+    height: brickConfig.height,
+    color: brickConfig.color,
+    image : brickConfig.image
+  }));
+
+  return { pigs, briques };
+}
 const Canvas = ({ height, width }: { height: number; width: number }) => {
  
   // intialisation des balles
@@ -69,6 +139,25 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     image: randomChoice(conf.IMAGE_BALL_ALL)
 
   }));
+
+  let { pigs, briques }  = createEntities(1);
+  // const pigs = new Array(conf.pig_numbers).fill(null).map((_) => ({
+  //   life: conf.PIGLIFE,
+  //   resting: true,
+  //   target: true,
+  //   weight: 1.2,
+  //   coord: {
+  //     x: 400,
+  //     y: 700,
+  //     dx: 0,
+  //     dy: 0
+  //   },
+  //   radius: conf.RADIUS,
+  //   alpha: 1,
+  //   color: '#ff0000',
+  //   image: conf.IMAGE_KINGPIG
+
+  // }));
 
   let myArrayBriques = new Array(conf.brique_numbers).fill(null).map((_) => ({
     life : conf.BRIQUELIFE,
@@ -132,9 +221,10 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
 
 
   const initialState: State = {
-    target: null,
     pos: balls,
-    briques: myArrayBriques,
+    pigs: pigs,
+    briques: briques,
+    target: null,
     reserves: reserveBall,
     shoot: null,
     size: { height, width },

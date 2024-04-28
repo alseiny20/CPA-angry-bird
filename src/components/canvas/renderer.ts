@@ -99,13 +99,12 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   clear(ctx);
 
   // Dessiner la lance
-  const logoImage = new Image();
-  logoImage.src = './lance.png';
-  logoImage.onload = () => {
-  // Vous pouvez modifier x et y pour positionner le logo où vous le souhaitez sur le canevas.
+  const slingshot = new Image();
+  slingshot.src = 'https://www.clipartmax.com/png/full/110-1101727_sling-shot-image-angry-birds-slingshot-clipart.png';
+  slingshot.onload = () => {
   const x = conf.COORD_TARGET.x - 50
   const y = conf.COORD_TARGET.y
-  ctx.drawImage(logoImage, x, y, 100, 100);
+  ctx.drawImage(slingshot, x, y,80,  170);
   };
 
   // Dessiner les balles
@@ -123,7 +122,12 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     drawCircle(ctx, reserve.coord, computeColor(reserve.life, conf.BALLLIFE, reserve.color || COLORS.GREEN), reserve.color || COLORS.GREEN, reserve.image, reserve.alpha, reserve.radius);
   });
 
-    
+  // Dessiner les cochons
+  state.pigs.forEach(pig => {
+    drawCircle(ctx, pig.coord, computeColor(pig.life, conf.PIGLIFE, pig.color || COLORS.GREEN), pig.color || COLORS.RED, pig.image, pig.alpha, pig.radius);
+  });
+  
+
     const target = state.pos.find((p) => p.target)
     const positionBall = target ? target.coord : { x: conf.COORD_TARGET.x, y: conf.COORD_TARGET.y, dx: 0, dy: 0 };
     var space_ball = 15;
