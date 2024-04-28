@@ -227,9 +227,8 @@ const dist2 = (o1: Coord, o2: Coord) =>
     let coord = { ...pig.coord };
 
     // appliation la gravité
-    if (!pig.resting) {
         coord.dy += conf.GRAVITY * pig.weight;
-    }
+    
 
     // résistance de l'air de manière différente selon la direction
     if (coord.dy > 0) {
@@ -566,7 +565,16 @@ export const step = (state: State) => {
     });
    
   })
-
+  state.pigs.forEach((ball) => {
+    state.briques.forEach((brique) => {
+      if (checkBallBriqueCollision(ball, brique)) {
+        console.log("collision detected");
+        // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
+        handleBallBriqueCollision(ball, brique);
+        // ball.coord = a;
+      }
+    });
+  });
   // state.briques.forEach((p1, i, arr) => {
   //   arr.slice(i + 1).map((p2) => {
   //     if (checkBriqueCollision(p1, p2)) {
