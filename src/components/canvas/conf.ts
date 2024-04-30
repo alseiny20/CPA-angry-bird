@@ -44,7 +44,11 @@ export const VELOCITY_THRESHOLD = 0.5; // Coefficient du
 export const MU_K = 0.01; // Ajustable vu qu'on a pas definie c'est quell type de matiere le sol
 
 // Coefficient de restitution pour les collisions
-export const COEFFICIENT_OF_RESTITUTION = 0.45; // Ajustable vu qu'on a pas la notion de poid
+export const COEFFICIENT_OF_RESTITUTION = 0.7; // Ajustable vu qu'on a pas la notion de poid
 
 // Mise à jour de GROUND_FRICTION pour utiliser MU_K
 export const GROUND_FRICTION = 1 - MU_K; // Calcule la friction au sol à partir de MU_K
+
+
+export const MASS_BALL = 20; // Masse de la balle
+export const MASS_BRIQUE = 40; // Masse de la brique

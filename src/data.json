@@ -9,7 +9,7 @@
             "target": true,
             "weight": 1.2,
             "coord": {
-              "x": 720,
+              "x": 740,
               "y": 900,
               "dx": 0,
               "dy": 0
@@ -26,7 +26,7 @@
             "weight": 1.2,
             "coord": {
               "x": 500,
-              "y": 700,
+              "y": 900,
               "dx": 0,
               "dy": 0
             },
@@ -49,7 +49,7 @@
             "width": 100,
             "height": 50,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "../brick.png"
           },
           {
             "life": 200,
@@ -70,7 +70,7 @@
             "weight": 50,
             "coord": {
               "x": 650,
-              "y": 320,
+              "y": 400,
               "dx": 0,
               "dy": 0
             },
@@ -84,7 +84,22 @@
             "weight": 50,
             "coord": {
               "x": 850,
-              "y":230,
+              "y":300,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 20,
+            "height": 150,
+            "color": "#0000ff",
+            "image": "./brick.png"
+          }
+          ,
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 1150,
+              "y":400,
               "dx": 0,
               "dy": 0
             },
@@ -97,13 +112,27 @@
             "life": 200,
             "weight": 50,
             "coord": {
-              "x": 550,
-              "y": 50,
+              "x": 1250,
+              "y":130,
               "dx": 0,
               "dy": 0
             },
-            "width": 400,
-            "height": 20,
+            "width": 250,
+            "height": 150,
+            "color": "#0000ff",
+            "image": "./brick.png"
+          },
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 1450,
+              "y":900,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 40,
+            "height": 150,
             "color": "#0000ff",
             "image": "./brick.png"
           }
@@ -152,7 +181,7 @@
               "dx": 0,
               "dy": 0
             },
-            "width": 100,
+            "width": 400,
             "height": 50,
             "color": "#0000ff"
           }

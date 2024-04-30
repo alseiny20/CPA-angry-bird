@@ -26,37 +26,6 @@ function randomChoice<T>(list: T[]): T {
 }
 
 // Fonction pour créer les cochons et les briques en fonction du niveau donné
-// function createEntities(levelId:number) {pigs: Array<Pig>; bricks: Array<Brique>} {
-//   const level = config.levels.find((lvl) => lvl.id === levelId);
-//   if (!level) {
-//     console.error(`Level ${levelId} not found in the configuration.`);
-//     return { pigs: Array, bricks: Array }; // Retourne des tableaux vides si le niveau n'est pas trouvé
-//   }
-//   let pigs = new Array(conf.ball_none_numbers).fill(null).map(level.pigs.map((pigConfig) => ({
-//   // const pigs = level.pigs.map((pigConfig) => ({
-//     life: pigConfig.life,
-//     resting: pigConfig.resting,
-//     target: pigConfig.target,
-//     weight: pigConfig.weight,
-//     coord: pigConfig.coord,
-//     radius: pigConfig.radius,
-//     alpha: pigConfig.alpha,
-//     color: pigConfig.color,
-//     image: pigConfig.image,
-//   })));
-
-//   const bricks = new Array(conf.ball_none_numbers).fill(null).map(level.pigs.map(level.bricks.map((brickConfig) => ({
-//     life: brickConfig.life,
-//     weight: brickConfig.weight,
-//     coord: brickConfig.coord,
-//     width: brickConfig.width,
-//     height: brickConfig.height,
-//     color: brickConfig.color,
-//   })));
-
-//   return { pigs, bricks };
-// }
-// Fonction pour créer les cochons et les briques en fonction du niveau donné
 function createEntities(levelId: number) {
   const level = config.levels.find((lvl: { id: number }) => lvl.id === levelId);
   if (!level) {
@@ -76,7 +45,7 @@ function createEntities(levelId: number) {
     image: pigConfig.image,
   }));
 
-  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:any}) => ({
+  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:string}) => ({
     life: brickConfig.life,
     weight: brickConfig.weight,
     coord: brickConfig.coord,
@@ -136,8 +105,8 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
       dy: randomSign() * randomInt(10)
     },
     color: '#00ff00', // Couleur verte pour les nouvelles balles
-    image: randomChoice(conf.IMAGE_BALL_ALL)
-
+    image: randomChoice(conf.IMAGE_BALL_ALL),
+    radius : conf.RADIUS
   }));
 
   let { pigs, briques }  = createEntities(1);
@@ -163,21 +132,21 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     life : conf.BRIQUELIFE,
     weight : 50,
     coord: {
-      x: 1000,//randomInt(width),
+      x: 500,//randomInt(width),
       y: 500,//randomInt(height),
       dx: 0,
       dy: 0
     },
     width: 100,
     height: 100,//randomInt(100),
-    color: '#0000ff', // Couleur bleue pour les briques
+    color: '#000000', // Couleur bleue pour les briques
   })).concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
   
       life : conf.BRIQUELIFE,
       weight : 50,
       coord: {
-        x: 1150,//randomInt(width),
-        y: 500,//randomInt(height),
+        x: 500,//randomInt(width),
+        y: 300,//randomInt(height),
         dx: 0,
         dy: 0
       },
@@ -185,40 +154,6 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
       height: 100,//randomInt(100),
       color: '#0000ff', // Couleur bleue pour les briques
     })));
-
-  // myArrayBriques = myArrayBriques.concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
-  //   life : conf.BRIQUELIFE,
-  //   weight : 50,
-  //   coord: {
-  //     x: 0,
-  //     y: height - 300,
-  //     dx: 0,
-  //     dy: 0
-  //   },
-  //   width: width,
-  //   height: 50,
-  //   color: '#0000ff', // Couleur bleue pour les briques
-  // })));
-
-  // Concaténation des nouvelles balles à l'array existant
-  // myArrayBall = myArrayBall.concat(newBalls);
-
-  // let target_ball = {
-  //   life: conf.BALLLIFE,
-  //   weight: 1.5,
-  //   resting: true,
-  //   target: true,
-  //   coord: {
-  //     x: conf.COORD_TARGET.x,
-  //     y: conf.COORD_TARGET.y,
-  //     dx: 0,
-  //     dy: 0,
-  //   },
-  //   color: '#00ff00', // Couleur verte pour les nouvelles balles
-  // };
-
-  // balls.push(target_ball);
-
 
   const initialState: State = {
     pos: balls,
