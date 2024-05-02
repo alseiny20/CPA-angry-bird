@@ -36,6 +36,7 @@ export type Brique = {
   height: number;
   weight: number; // Ajout du poids de la brique
   life: number;
+  alpha: number;
   resting?: boolean;
   initDrag?: Coord;
   selectect?: boolean;
@@ -216,6 +217,7 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
         coord: coord,
     };
 };
+
 const iterateBrique2 = (bound: Size) => (brique: Brique, otherBriques: Array<Brique>) => {
   if (brique.resting) {
       return brique;
@@ -364,6 +366,7 @@ const collide = (o1: Coord, o2: Coord) =>
     p2.x += correctionFactor * nx;
     p2.y += correctionFactor * ny;
   }
+
   export const collideBallBall = (ball1: Coord, ball2: Coord) => {
     const dx = ball2.x - ball1.x;
     const dy = ball2.y - ball1.y;
@@ -396,12 +399,25 @@ const collide = (o1: Coord, o2: Coord) =>
     ball2.y += correctionFactor * ny;
 }
 
-export const collideBallBrick = (ball: Ball, brick: Brique)=> {
-  const nearestX = Math.max(brick.coord.x, Math.min(ball.coord.x, brick.coord.x + brick.width));
-  const nearestY = Math.max(brick.coord.y, Math.min(ball.coord.y, brick.coord.y + brick.height));
+export const collideBallBrick = (ball: Ball, brick: Brique) => {
+  // Convert brick angle from degrees to radians for transformations
+  const angle = -brick.alpha * Math.PI / 180;
 
-  const deltaX = ball.coord.x - nearestX;
-  const deltaY = ball.coord.y - nearestY;
+  // Calculate the coordinates of the ball relative to the rotated brick
+  const rotatedBallX = Math.cos(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) -
+                       Math.sin(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
+                       (brick.coord.x + brick.width / 2);
+
+  const rotatedBallY = Math.sin(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) +
+                       Math.cos(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
+                       (brick.coord.y + brick.height / 2);
+
+  // Calculate nearest point on the rotated brick to the rotated ball position
+  const nearestX = Math.max(brick.coord.x, Math.min(rotatedBallX, brick.coord.x + brick.width));
+  const nearestY = Math.max(brick.coord.y, Math.min(rotatedBallY, brick.coord.y + brick.height));
+
+  const deltaX = rotatedBallX - nearestX;
+  const deltaY = rotatedBallY - nearestY;
   const distanceSquared = deltaX * deltaX + deltaY * deltaY;
   const radiusSquared = ball.radius * ball.radius;
 
@@ -435,14 +451,16 @@ export const collideBallBrick = (ball: Ball, brick: Brique)=> {
 
           ball.invincible = 1; // Prevent immediate re-collision
           // Update brick velocity (Push back the brick)
-          const brickImpulse = 20* (1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
+          const brickImpulse = 20 * (1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
 
           brick.coord.dx += (brickImpulse / brick.weight) * nx;
           brick.coord.dy += (brickImpulse / brick.weight) * ny;
       }
   } else {
       ball.invincible = 0; // Reset invincibility when not colliding
-  }}
+  }
+};
+
 
 
 function applyGroundFrictionAndResting(obj: any, groundY: number) {

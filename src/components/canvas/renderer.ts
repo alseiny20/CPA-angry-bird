@@ -81,32 +81,38 @@ const computeColor = (life: number, maxLife: number, baseColor: string) => {
 //   ctx.fill();
 // };
 const drawBrique = (
-    ctx: CanvasRenderingContext2D,
-    { x, y }: { x: number; y: number },
-    width: number,
-    height: number,
-    color: string,
-    initColor: string,
-    imageLink?: string // Path to the brick image
-  ) => {
-    if (initColor !== COLORS.RED) {
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.rect(x, y, width, height);
-        ctx.fill();
-    } else {
-      const brickImage = new Image();
-      brickImage.src = imageLink || './brick.png' || "https://www.angrybirds.com/wp-content/uploads/2022/08/AB2_202211_500x500_Website_Red.png	";
+  ctx: CanvasRenderingContext2D,
+  { x, y }: { x: number; y: number },
+  width: number,
+  height: number,
+  color: string,
+  initColor: string,
+  alpha: number, // Angle in radians
+  imageLink?: string, // Path to the brick image
+) => {
+  ctx.save(); // Save the current context state
+  ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
+  ctx.rotate(alpha); // Rotate the context by alpha
 
-      // Wait for the image to load
-      brickImage.onload = () => {
-        ctx.save();
-        ctx.globalAlpha = 1;
-        ctx.drawImage(brickImage, x, y, width, height);
-        ctx.restore();
-      };
-    }
+  if (initColor !== COLORS.RED) {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      // Draw the rectangle centered around the origin
+      ctx.rect(-width / 2, -height / 2, width, height);
+      ctx.fill();
+  } else {
+    const brickImage = new Image();
+    brickImage.src = imageLink || './brick.png' || "https://www.angrybirds.com/wp-content/uploads/2022/08/AB2_202211_500x500_Website_Red.png";
+
+    // Wait for the image to load
+    brickImage.onload = () => {
+      ctx.drawImage(brickImage, -width / 2, -height / 2, width, height); // Draw the image centered around the origin
+    };
+  }
+
+  ctx.restore(); // Restore the original state
 };
+
 
 const drawShoot = (
   ctx: CanvasRenderingContext2D,
@@ -141,7 +147,7 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
   // Dessiner les briques
   state.briques.forEach(brique => {
-    drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
+    drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.alpha, brique.image);
   });
 
   // Dessiner les balles de réserve

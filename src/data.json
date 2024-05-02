@@ -186,6 +186,43 @@
             "color": "#0000ff"
           }
         ]
+      },
+      {
+        "id": 3,
+        "pigs": [
+          {
+            "life": 100,
+            "resting": true,
+            "target": true,
+            "weight": 1.2,
+            "coord": {
+              "x": 700,
+              "y": 700,
+              "dx": 0,
+              "dy": 0
+            },
+            "radius": 30,
+            "alpha": 0,
+            "color": "#ff0000",
+            "image": "king_pig_image.png"
+          }
+        ],
+        "bricks": [
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 650,
+              "y": 650,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 100,
+            "color": "#0000ff",
+            "alpha": 0
+          }
+        ]
       }
     ]
   }
