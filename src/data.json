@@ -4,7 +4,7 @@
         "id": 1,
         "pigs": [
           {
-            "life": 10,
+            "life": 1,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -20,7 +20,7 @@
             "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
           },
           {
-            "life": 100,
+            "life": 2,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -38,7 +38,7 @@
         ],
         "bricks": [
           {
-            "life": 200,
+            "life": 2,
             "weight": 50,
             "coord": {
               "x": 800,
@@ -49,7 +49,7 @@
             "width": 100,
             "height": 50,
             "color": "#0000ff",
-            "image": "../brick.png"
+            "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5e53b199-11fc-4f88-8c35-2fca1fd5f594/d6vkt2e-21949081-5807-4a19-ac4f-82b2005e9b07.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzVlNTNiMTk5LTExZmMtNGY4OC04YzM1LTJmY2ExZmQ1ZjU5NFwvZDZ2a3QyZS0yMTk0OTA4MS01ODA3LTRhMTktYWM0Zi04MmIyMDA1ZTliMDcucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GTB87FW5QOyyV8E2TFxLXSvvV3Z7g2blijrJpnVD0X0"
           },
           {
             "life": 200,

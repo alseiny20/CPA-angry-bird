@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State, Coord } from './state';
+import { State, Coord, Brique } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -8,8 +8,7 @@ const COLORS = {
 };
 
 const toDoubleHexa = (n: number) => (n < 16 ? '0' + n.toString(16) : n.toString(16));
-
-export const rgbaTorgb = (rgb: string, alpha = 0) => {
+export const rgbaTorgb = (rgb: string, alpha = 1) => {
   let r = 0, g = 0, b = 0;
 
   if (rgb.startsWith('#')) {
@@ -20,9 +19,23 @@ export const rgbaTorgb = (rgb: string, alpha = 0) => {
     [r, g, b] = [parseInt(rStr), parseInt(gStr), parseInt(bStr)];
   }
 
-  [r, g, b] = [r, g, b].map(channel => Math.max(Math.min(Math.floor((1 - alpha) * channel + alpha * 255), 255), 0));
+  // No alpha blending here, just return the hex color
   return `#${toDoubleHexa(r)}${toDoubleHexa(g)}${toDoubleHexa(b)}`;
 };
+// export const rgbaTorgb = (rgb: string, alpha = 0) => {
+//   let r = 0, g = 0, b = 0;
+
+//   if (rgb.startsWith('#')) {
+//     const [hexR, hexG, hexB] = rgb.length === 7 ? [rgb.slice(1, 3), rgb.slice(3, 5), rgb.slice(5, 7)] : [rgb[1], rgb[2], rgb[3]];
+//     [r, g, b] = [parseInt(hexR, 16), parseInt(hexG, 16), parseInt(hexB, 16)];
+//   } else if (rgb.startsWith('rgb')) {
+//     const [rStr, gStr, bStr] = rgb.replace(/(rgb)|\(|\)| /g, '').split(',');
+//     [r, g, b] = [parseInt(rStr), parseInt(gStr), parseInt(bStr)];
+//   }
+
+//   [r, g, b] = [r, g, b].map(channel => Math.max(Math.min(Math.floor((1 - alpha) * channel + alpha * 255), 255), 0));
+//   return `#${toDoubleHexa(r)}${toDoubleHexa(g)}${toDoubleHexa(b)}`;
+// };
 
 const clear = (ctx: CanvasRenderingContext2D) => {
   const { height, width } = ctx.canvas;
@@ -30,39 +43,115 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   backgroundImage.src = conf.DEFAULT_BACKGROUND_IMAGE;
   console.log('backgroundImage.src', backgroundImage.src);
   backgroundImage.onload = () => ctx.drawImage(backgroundImage, 0, 0, width, height);
+  
+  // const { width, height } = ctx.canvas;
+  // // Clear the canvas with a transparent fill
+  // ctx.clearRect(0, 0, width, height);
 };
 
 export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
-
 const drawCircle = (
   ctx: CanvasRenderingContext2D,
-  { x, y }: { x: number; y: number },
+  coord: Coord,
   color: string,
   initColor: string,
   link?: string,
   alpha: number = 1,
   radius: number = conf.RADIUS
 ) => {
+  const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
+
   if (initColor !== COLORS.RED) {
+    // For non-red balls, draw normally.
     ctx.beginPath();
     ctx.fillStyle = color;
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.arc(coord.x, coord.y, radius, 0, 2 * Math.PI);
     ctx.fill();
   } else {
+    // For red balls (with images), load and draw the image.
     const backgroundImage = new Image();
     backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
+
+    // Ensure image is loaded before drawing
     backgroundImage.onload = () => {
-      ctx.save();
+      ctx.save(); // Save the current context state
+      ctx.globalAlpha = alpha; // Apply alpha only for this image
+
       ctx.beginPath();
-      ctx.globalAlpha = alpha;
-      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.translate(coord.x, coord.y);
+      ctx.rotate(rotationAngle); // Apply rotation
+      ctx.arc(0, 0, radius, 0, 2 * Math.PI);
       ctx.clip();
-      ctx.drawImage(backgroundImage, x - conf.RADIUS, y - conf.RADIUS, conf.RADIUS * 2, conf.RADIUS * 2);
-      ctx.restore();
+
+      ctx.drawImage(backgroundImage, -radius, -radius, radius * 2, radius * 2);
+      ctx.restore(); // Restore the context state, including globalAlpha
     };
   }
 };
+
+// const drawCircle = (
+//   ctx: CanvasRenderingContext2D,
+//   coord: Coord,
+//   color: string,
+//   initColor: string,
+//   link?: string,
+//   alpha: number = 1,
+//   radius: number = conf.RADIUS
+// ) => {
+//   const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
+
+//   ctx.globalAlpha = alpha; // Set global alpha based on input
+//   if (initColor !== COLORS.RED) {
+//     ctx.beginPath();
+//     ctx.fillStyle = color;
+//     ctx.arc(coord.x, coord.y, radius, 0, 2 * Math.PI);
+//     ctx.fill();
+//   } else {
+//     const backgroundImage = new Image();
+//     backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
+//     backgroundImage.onload = () => {
+//       ctx.save();
+//       ctx.beginPath();
+//       ctx.globalAlpha = alpha;
+//       ctx.translate(coord.x, coord.y);
+//       ctx.rotate(rotationAngle); // Apply rotation
+//       ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+//       ctx.clip();
+//       ctx.drawImage(backgroundImage, -radius, -radius, radius * 2, radius * 2);
+//       ctx.restore();
+//     };
+//   }
+  
+// };
+// const drawCircle = (
+//   ctx: CanvasRenderingContext2D,
+//   { x, y }: { x: number; y: number },
+//   color: string,
+//   initColor: string,
+//   link?: string,
+//   alpha: number = 1,
+//   radius: number = conf.RADIUS
+// ) => {
+//   if (initColor !== COLORS.RED) {
+//     ctx.beginPath();
+//     ctx.fillStyle = color;
+//     ctx.arc(x, y, radius, 0, 2 * Math.PI);
+//     ctx.fill();
+//   } else {
+//     const backgroundImage = new Image();
+//     backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
+//     backgroundImage.onload = () => {
+//       ctx.save();
+//       ctx.beginPath();
+//       ctx.globalAlpha = alpha;
+//       ctx.arc(x, y, radius, 0, 2 * Math.PI);
+//       ctx.clip();
+//       ctx.drawImage(backgroundImage, x - conf.RADIUS, y - conf.RADIUS, conf.RADIUS * 2, conf.RADIUS * 2);
+//       ctx.restore();
+//     };
+//   }
+// };
 
 const computeColor = (life: number, maxLife: number, baseColor: string) => {
   return rgbaTorgb(baseColor, (maxLife - life) * (1 / maxLife));
@@ -70,42 +159,73 @@ const computeColor = (life: number, maxLife: number, baseColor: string) => {
 
 // const drawBrique = (
 //   ctx: CanvasRenderingContext2D,
-//   { x, y }: { x: number; y: number },
+//   brick: Brique,
+//   coord: Coord,
 //   width: number,
 //   height: number,
-//   color: string
+//   color: string,
+//   initColor: string,
+//   imageLink?: string // Path to the brick image
+// ) => {
+//   const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
+
+//   if (initColor !== COLORS.RED) {
+//     ctx.beginPath();
+//     ctx.fillStyle = color;
+//     ctx.rect(coord.x, coord.y, width, height);
+//     ctx.fill();
+//   } else {
+//     const brickImage = new Image();
+//     brickImage.src = imageLink || conf.BLOCK;
+
+//     // Wait for the image to load
+//     brickImage.onload = () => {
+//       ctx.save();
+//       ctx.translate(coord.x + width / 2, coord.y + height / 2);
+//       ctx.rotate(brick.rotationAngle); // Apply rotation
+//       ctx.drawImage(brickImage, -width / 2, -height / 2, width, height);
+//       ctx.restore();
+//     };
+//   }
+// };
+// const drawBrique = (
+//     ctx: CanvasRenderingContext2D,
+//     brick: Brique,
+//     coord: Coord,
+//     width: number,
+//     height: number,
+//     color: string,
+//     initColor: string,
+//     imageLink?: string // Path to the brick image
 // ) => {
 //   ctx.beginPath();
 //   ctx.fillStyle = color;
-//   ctx.rect(x, y, width, height);
+//   ctx.rect(coord.x, coord.y, width, height);
 //   ctx.fill();
 // };
 const drawBrique = (
-    ctx: CanvasRenderingContext2D,
-    { x, y }: { x: number; y: number },
+  ctx: CanvasRenderingContext2D,
+    brick: Brique,
+    coord: Coord,
     width: number,
     height: number,
     color: string,
     initColor: string,
     imageLink?: string // Path to the brick image
-  ) => {
-    if (initColor !== COLORS.RED) {
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.rect(x, y, width, height);
-        ctx.fill();
-    } else {
-      const brickImage = new Image();
-      brickImage.src = imageLink || './brick.png' || "https://www.angrybirds.com/wp-content/uploads/2022/08/AB2_202211_500x500_Website_Red.png	";
+) => {
+  ctx.save(); // Save the current drawing state
+  ctx.fillStyle = color;
 
-      // Wait for the image to load
-      brickImage.onload = () => {
-        ctx.save();
-        ctx.globalAlpha = 1;
-        ctx.drawImage(brickImage, x, y, width, height);
-        ctx.restore();
-      };
-    }
+  // Translate to the center of the brick
+  ctx.translate(brick.coord.x + brick.width / 2, brick.coord.y + brick.height / 2);
+
+  // Rotate the context based on brick's rotation angle
+  ctx.rotate(brick.rotationAngle);
+
+  // Draw the rotated rectangle
+  ctx.fillRect(-brick.width / 2, -brick.height / 2, brick.width, brick.height);
+
+  ctx.restore(); // Restore the previous drawing state
 };
 
 const drawShoot = (
@@ -119,7 +239,34 @@ const drawShoot = (
     ctx.fill();
   });
 }
+const drawEndGameScreen = (ctx : CanvasRenderingContext2D, image:string, msg:string) => {
+  const { height, width } = ctx.canvas;
 
+  // Load the background image
+  const backgroundImage = new Image();
+  backgroundImage.src = conf.END_GAME_BACKGROUND;
+  backgroundImage.onload = () => {
+    ctx.drawImage(backgroundImage, 0, 0, width, height);
+
+    // Draw text on top of the image
+    const text = msg;
+    ctx.font = '48px Arial';
+    ctx.fillStyle = 'white'; // Text color
+    ctx.textAlign = 'center'; // Center the text horizontally
+    ctx.textBaseline = 'middle'; // Center the text vertically
+    const textYOffset = height / 2 - 50; // Offset the text vertically
+    ctx.fillText(text, width / 2, textYOffset); // Fill text adjusted above center
+
+    // Load the image to be drawn on top
+    const endImage = new Image();
+    endImage.src = image;
+    endImage.onload = () => {
+      // Draw the end image on top of the background image
+      const imageYOffset = height / 2 + 50; // Offset the end image vertically
+      ctx.drawImage(endImage, width / 2 - endImage.width / 2, imageYOffset);
+    };
+  };
+};
 
 var initPos = false;
 export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
@@ -141,7 +288,7 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
   // Dessiner les briques
   state.briques.forEach(brique => {
-    drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
+    drawBrique(ctx, brique, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
   });
 
   // Dessiner les balles de réserve
@@ -191,23 +338,16 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
       console.log("shooting", state.shoot);
     }
 
-    // console.log("**<>",target?.selectect);
-    // console.log("**<>",positionTire.x,conf.COORD_TARGET.x,positionTire.y,conf.COORD_TARGET.y);
-    
-    // // Draw the half-circle for the slingshot pouch
-    // ctx.beginPath();
-    // ctx.arc(positionTire.x,
-    //   positionTire.y,
-    //   target?.radius || conf.RADIUS / 2, 
-    //   Math.PI, 0, 
-    //   (target !== undefined && target.coord.dy>0));
-    // ctx.stroke(); // Draw the path 
-
   
   // Afficher le texte de fin si le jeu est terminé
   if (state.endOfGame) {
-    const text = 'END';
-    ctx.font = '48px arial';
-    ctx.strokeText(text, state.size.width / 2 - ctx.measureText(text).width / 2, state.size.height / 2);
+    msg = "You Win";
+    image = conf.IMAGE_RED;
+    if(state.pigs.length > 0 && state.pos.length <= 0){
+      var msg = "Game Over";
+      var image = conf.IMAGE_MINIONPIG;
+    }
+
+    drawEndGameScreen(ctx, image, msg);
   }
 };

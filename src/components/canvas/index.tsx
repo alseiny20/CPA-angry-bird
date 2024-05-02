@@ -52,7 +52,10 @@ function createEntities(levelId: number) {
     width: brickConfig.width,
     height: brickConfig.height,
     color: brickConfig.color,
-    image : brickConfig.image
+    image : brickConfig.image,
+    rotationAngle : 0,
+    angularVelocity : 0,
+    center : {x: brickConfig.coord.x + brickConfig.width / 2, y: brickConfig.coord.y + brickConfig.height / 2},
   }));
 
   return { pigs, briques };
@@ -66,15 +69,6 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     return position;
   }
   
-  // var radius =  30;
-  // const getRadius = () => {
-  //   radius = randomInt(40)
-  //   return radius;
-  // }
-
-  // const getAlpha = () => {
-  //   return (radius * 5) /150;
-  // }
 
   let reserveBall = new Array(conf.ball_none_numbers).fill(null).map((coord) => ({
     life: conf.BALLLIFE,
@@ -163,7 +157,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     reserves: reserveBall,
     shoot: null,
     size: { height, width },
-    endOfGame: true,
+    endOfGame: false,
   }
 
   const ref = useRef<any>()
@@ -171,9 +165,11 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
 
   const iterate = (ctx: CanvasRenderingContext2D) => {
     state.current = step(state.current)
-    state.current.endOfGame = !endOfGame(state.current)
+    console.log(state.current.endOfGame)
+    // state.current.endOfGame = !endOfGame(state.current)
     render(ctx)(state.current)
     if (!state.current.endOfGame) requestAnimationFrame(() => iterate(ctx))
+      console.log(state.current.endOfGame)
   }
   const onClick = (e: PointerEvent) => {
     // state.current = click(state.current)(e)
@@ -206,7 +202,22 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
       ref.current.removeEventListener('mouseup', onUp)
     }
   }, [])
-  return <canvas {...{ height, width, ref }} />
+  const backgroundImg = conf.DEFAULT_BACKGROUND_IMAGE;
+  const backgroundStyle: React.CSSProperties = {
+    backgroundImage: `url(${backgroundImg})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
+  return(
+    <div style={backgroundStyle}>
+      <canvas {...{ height, width, ref }} />
+    </div>
+  ) 
 }
 
 export default Canvas
