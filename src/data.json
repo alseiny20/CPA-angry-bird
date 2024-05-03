@@ -48,11 +48,11 @@
             },
             "width": 100,
             "height": 50,
-            "color": "#0000ff",
-            "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5e53b199-11fc-4f88-8c35-2fca1fd5f594/d6vkt2e-21949081-5807-4a19-ac4f-82b2005e9b07.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzVlNTNiMTk5LTExZmMtNGY4OC04YzM1LTJmY2ExZmQ1ZjU5NFwvZDZ2a3QyZS0yMTk0OTA4MS01ODA3LTRhMTktYWM0Zi04MmIyMDA1ZTliMDcucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.GTB87FW5QOyyV8E2TFxLXSvvV3Z7g2blijrJpnVD0X0"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 600,
@@ -62,11 +62,11 @@
             },
             "width": 100,
             "height": 50,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 650,
@@ -76,11 +76,11 @@
             },
             "width": 20,
             "height": 150,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 850,
@@ -90,12 +90,12 @@
             },
             "width": 20,
             "height": 150,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           }
           ,
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 1150,
@@ -105,11 +105,11 @@
             },
             "width": 20,
             "height": 150,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 1250,
@@ -119,11 +119,11 @@
             },
             "width": 250,
             "height": 150,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
-            "life": 200,
+            "life": 20,
             "weight": 50,
             "coord": {
               "x": 1450,
@@ -133,8 +133,22 @@
             },
             "width": 40,
             "height": 150,
-            "color": "#0000ff",
-            "image": "./brick.png"
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          },
+          {
+            "life": 20,
+            "weight": 50,
+            "coord": {
+              "x": 600,
+              "y":100,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 400,
+            "height": 50,
+            "color": "#ff0000",
+            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           }
         ]
       },
@@ -147,7 +161,7 @@
             "target": true,
             "weight": 1.2,
             "coord": {
-              "x": 700,
+              "x": 50,
               "y": 700,
               "dx": 0,
               "dy": 0
@@ -164,26 +178,77 @@
             "weight": 50,
             "coord": {
               "x": 650,
-              "y": 650,
+              "y": 600,
               "dx": 0,
               "dy": 0
             },
-            "width": 150,
-            "height": 50,
-            "color": "#0000ff"
+            "width": 40,
+            "height": 150,
+            "color": "#ff0000"
           },
           {
             "life": 200,
             "weight": 50,
             "coord": {
-              "x": 750,
+              "x": 950,
               "y": 650,
               "dx": 0,
               "dy": 0
             },
+            "width": 40,
+            "height": 150,
+            "color": "#ff0000"
+          }
+          ,
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 850,
+              "y": 250,
+              "dx": 0,
+              "dy": 0
+            },
             "width": 400,
-            "height": 50,
-            "color": "#0000ff"
+            "height": 70,
+            "color": "#ff0000"
+          }
+        ]
+      },
+      
+      {
+        "id": 3,
+        "pigs": [
+          {
+            "life": 100,
+            "resting": true,
+            "target": true,
+            "weight": 1.2,
+            "coord": {
+              "x": 50,
+              "y": 700,
+              "dx": 0,
+              "dy": 0
+            },
+            "radius": 30,
+            "alpha": 1,
+            "color": "#ff0000",
+            "image": "king_pig_image.png"
+          }
+        ],
+        "bricks": [
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 650,
+              "y": 300,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 40,
+            "height": 150,
+            "color": "#ff0000"
           }
         ]
       }

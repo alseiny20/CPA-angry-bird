@@ -44,7 +44,7 @@ const App: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setSize({
-        height: container.current.clientHeight-100,
+        height: container.current.clientHeight-80,
         width: container.current.clientWidth,
       })
     }, 100)

@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State, Coord, Brique } from './state';
+import { State, Coord, Brique, Point } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -22,20 +22,7 @@ export const rgbaTorgb = (rgb: string, alpha = 1) => {
   // No alpha blending here, just return the hex color
   return `#${toDoubleHexa(r)}${toDoubleHexa(g)}${toDoubleHexa(b)}`;
 };
-// export const rgbaTorgb = (rgb: string, alpha = 0) => {
-//   let r = 0, g = 0, b = 0;
 
-//   if (rgb.startsWith('#')) {
-//     const [hexR, hexG, hexB] = rgb.length === 7 ? [rgb.slice(1, 3), rgb.slice(3, 5), rgb.slice(5, 7)] : [rgb[1], rgb[2], rgb[3]];
-//     [r, g, b] = [parseInt(hexR, 16), parseInt(hexG, 16), parseInt(hexB, 16)];
-//   } else if (rgb.startsWith('rgb')) {
-//     const [rStr, gStr, bStr] = rgb.replace(/(rgb)|\(|\)| /g, '').split(',');
-//     [r, g, b] = [parseInt(rStr), parseInt(gStr), parseInt(bStr)];
-//   }
-
-//   [r, g, b] = [r, g, b].map(channel => Math.max(Math.min(Math.floor((1 - alpha) * channel + alpha * 255), 255), 0));
-//   return `#${toDoubleHexa(r)}${toDoubleHexa(g)}${toDoubleHexa(b)}`;
-// };
 
 const clear = (ctx: CanvasRenderingContext2D) => {
   const { height, width } = ctx.canvas;
@@ -47,6 +34,16 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   // const { width, height } = ctx.canvas;
   // // Clear the canvas with a transparent fill
   // ctx.clearRect(0, 0, width, height);
+};
+const drawCorner = (ctx: CanvasRenderingContext2D, corners: Array<Point>) => {
+  // Draw a dot at each corner
+  corners.forEach(corner => {
+    ctx.beginPath();
+    ctx.fillStyle = COLORS.RED;
+    // ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
+    ctx.fillRect(corner.x, corner.y, 10, 10);
+    ctx.fill();
+  });
 };
 
 export const randomInt = (max: number) => Math.floor(Math.random() * max)
@@ -76,9 +73,9 @@ const drawCircle = (
     // Ensure image is loaded before drawing
     backgroundImage.onload = () => {
       ctx.save(); // Save the current context state
+      ctx.beginPath();
       ctx.globalAlpha = alpha; // Apply alpha only for this image
 
-      ctx.beginPath();
       ctx.translate(coord.x, coord.y);
       ctx.rotate(rotationAngle); // Apply rotation
       ctx.arc(0, 0, radius, 0, 2 * Math.PI);
@@ -89,107 +86,13 @@ const drawCircle = (
     };
   }
 };
-
-// const drawCircle = (
-//   ctx: CanvasRenderingContext2D,
-//   coord: Coord,
-//   color: string,
-//   initColor: string,
-//   link?: string,
-//   alpha: number = 1,
-//   radius: number = conf.RADIUS
-// ) => {
-//   const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
-
-//   ctx.globalAlpha = alpha; // Set global alpha based on input
-//   if (initColor !== COLORS.RED) {
-//     ctx.beginPath();
-//     ctx.fillStyle = color;
-//     ctx.arc(coord.x, coord.y, radius, 0, 2 * Math.PI);
-//     ctx.fill();
-//   } else {
-//     const backgroundImage = new Image();
-//     backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
-//     backgroundImage.onload = () => {
-//       ctx.save();
-//       ctx.beginPath();
-//       ctx.globalAlpha = alpha;
-//       ctx.translate(coord.x, coord.y);
-//       ctx.rotate(rotationAngle); // Apply rotation
-//       ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-//       ctx.clip();
-//       ctx.drawImage(backgroundImage, -radius, -radius, radius * 2, radius * 2);
-//       ctx.restore();
-//     };
-//   }
-  
-// };
-// const drawCircle = (
-//   ctx: CanvasRenderingContext2D,
-//   { x, y }: { x: number; y: number },
-//   color: string,
-//   initColor: string,
-//   link?: string,
-//   alpha: number = 1,
-//   radius: number = conf.RADIUS
-// ) => {
-//   if (initColor !== COLORS.RED) {
-//     ctx.beginPath();
-//     ctx.fillStyle = color;
-//     ctx.arc(x, y, radius, 0, 2 * Math.PI);
-//     ctx.fill();
-//   } else {
-//     const backgroundImage = new Image();
-//     backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
-//     backgroundImage.onload = () => {
-//       ctx.save();
-//       ctx.beginPath();
-//       ctx.globalAlpha = alpha;
-//       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-//       ctx.clip();
-//       ctx.drawImage(backgroundImage, x - conf.RADIUS, y - conf.RADIUS, conf.RADIUS * 2, conf.RADIUS * 2);
-//       ctx.restore();
-//     };
-//   }
-// };
-
 const computeColor = (life: number, maxLife: number, baseColor: string) => {
   return rgbaTorgb(baseColor, (maxLife - life) * (1 / maxLife));
 };
 
+
 // const drawBrique = (
 //   ctx: CanvasRenderingContext2D,
-//   brick: Brique,
-//   coord: Coord,
-//   width: number,
-//   height: number,
-//   color: string,
-//   initColor: string,
-//   imageLink?: string // Path to the brick image
-// ) => {
-//   const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
-
-//   if (initColor !== COLORS.RED) {
-//     ctx.beginPath();
-//     ctx.fillStyle = color;
-//     ctx.rect(coord.x, coord.y, width, height);
-//     ctx.fill();
-//   } else {
-//     const brickImage = new Image();
-//     brickImage.src = imageLink || conf.BLOCK;
-
-//     // Wait for the image to load
-//     brickImage.onload = () => {
-//       ctx.save();
-//       ctx.translate(coord.x + width / 2, coord.y + height / 2);
-//       ctx.rotate(brick.rotationAngle); // Apply rotation
-//       ctx.drawImage(brickImage, -width / 2, -height / 2, width, height);
-//       ctx.restore();
-//     };
-//   }
-// };
-// const drawBrique = (
-//     ctx: CanvasRenderingContext2D,
 //     brick: Brique,
 //     coord: Coord,
 //     width: number,
@@ -198,35 +101,56 @@ const computeColor = (life: number, maxLife: number, baseColor: string) => {
 //     initColor: string,
 //     imageLink?: string // Path to the brick image
 // ) => {
-//   ctx.beginPath();
+//   ctx.save(); // Save the current drawing state
 //   ctx.fillStyle = color;
-//   ctx.rect(coord.x, coord.y, width, height);
-//   ctx.fill();
+
+//   // Translate to the center of the brick
+//   ctx.translate(brick.coord.x + brick.width / 2, brick.coord.y + brick.height / 2);
+
+//   // Rotate the context based on brick's rotation angle
+//   ctx.rotate(brick.rotationAngle);
+
+//   // Draw the rotated rectangle
+//   ctx.fillRect(-brick.width / 2, -brick.height / 2, brick.width, brick.height);
+
+//   ctx.restore(); // Restore the previous drawing state
 // };
+
 const drawBrique = (
   ctx: CanvasRenderingContext2D,
-    brick: Brique,
-    coord: Coord,
-    width: number,
-    height: number,
-    color: string,
-    initColor: string,
-    imageLink?: string // Path to the brick image
+  { x, y }: { x: number; y: number },
+  width: number,
+  height: number,
+  color: string,
+  initColor: string,
+  alpha: number, // Angle in radians
+  imageLink?: string, // Path to the brick image
 ) => {
-  ctx.save(); // Save the current drawing state
-  ctx.fillStyle = color;
+  
+  ctx.save(); // Save the current context state$
+  
+  ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
+  const angle = -alpha * (Math.PI / 180);
+  ctx.rotate(angle); // Rotate the context by alpha
+  if (initColor !== COLORS.RED) {
+  
+    // Draw the rectangle centered around the origin with rotation
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.fillRect(-width / 2, -height / 2, width, height);
+  } else {
+    // For red balls (with images), load and draw the image.
+    const backgroundImage = new Image();
+    backgroundImage.src = imageLink || conf.BLOCK;
 
-  // Translate to the center of the brick
-  ctx.translate(brick.coord.x + brick.width / 2, brick.coord.y + brick.height / 2);
-
-  // Rotate the context based on brick's rotation angle
-  ctx.rotate(brick.rotationAngle);
-
-  // Draw the rotated rectangle
-  ctx.fillRect(-brick.width / 2, -brick.height / 2, brick.width, brick.height);
-
-  ctx.restore(); // Restore the previous drawing state
+    // Ensure image is loaded before drawing
+    backgroundImage.onload = () => {
+      ctx.drawImage(backgroundImage, x,y, width, height); // Draw the image centered around the origin
+    };
+  }
+  ctx.restore(); // Restore the original state
 };
+
 
 const drawShoot = (
   ctx: CanvasRenderingContext2D,
@@ -250,7 +174,7 @@ const drawEndGameScreen = (ctx : CanvasRenderingContext2D, image:string, msg:str
 
     // Draw text on top of the image
     const text = msg;
-    ctx.font = '48px Arial';
+    ctx.font = '48px "Comic Sans MS"';
     ctx.fillStyle = 'white'; // Text color
     ctx.textAlign = 'center'; // Center the text horizontally
     ctx.textBaseline = 'middle'; // Center the text vertically
@@ -287,10 +211,13 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   });
 
   // Dessiner les briques
+  // state.briques.forEach(brique => {
+  //   drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
+  // });
   state.briques.forEach(brique => {
-    drawBrique(ctx, brique, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
+    // drawCorner(ctx, brique.corner)
+    drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.RED), brique.color || COLORS.RED, brique.alpha, brique.image);
   });
-
   // Dessiner les balles de réserve
   state.reserves.forEach(reserve => {
     drawCircle(ctx, reserve.coord, computeColor(reserve.life, conf.BALLLIFE, reserve.color || COLORS.GREEN), reserve.color || COLORS.GREEN, reserve.image, reserve.alpha, reserve.radius);

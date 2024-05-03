@@ -56,6 +56,14 @@ function createEntities(levelId: number) {
     rotationAngle : 0,
     angularVelocity : 0,
     center : {x: brickConfig.coord.x + brickConfig.width / 2, y: brickConfig.coord.y + brickConfig.height / 2},
+    alpha : 0,
+    dr : 0,
+    corner : [
+      {x: brickConfig.coord.x, y: brickConfig.coord.y},
+      {x: brickConfig.coord.x + brickConfig.width, y: brickConfig.coord.y},
+      {x: brickConfig.coord.x + brickConfig.width, y: brickConfig.coord.y + brickConfig.height},
+      {x: brickConfig.coord.x, y: brickConfig.coord.y + brickConfig.height}
+    ]
   }));
 
   return { pigs, briques };
