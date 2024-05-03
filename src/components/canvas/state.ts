@@ -17,6 +17,7 @@ export type Ball = {
   radius: number;
   alpha?: number;
 };
+
 export type Pig = {
   coord: Coord;
   life: number;
@@ -31,6 +32,7 @@ export type Pig = {
   radius: number;
   alpha?: number;
 };
+
 export type Brique = {
   coord: Coord; 
   width: number;
@@ -547,7 +549,7 @@ export const collideBallBrick = (ball: Ball, brick: Brique) => {
             const torque = leverArmX * ny - leverArmY * nx; // Torque calculation: cross product of lever arm and normal
 
             // Adjust rotational velocity based on the direction of the torque
-            brick.dr -= torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
+            brick.dr = torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
       }
   } else {
       ball.invincible = 0; // Reset invincibility when not colliding
@@ -566,6 +568,130 @@ function applyGroundFrictionAndResting(obj: any, groundY: number) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+function getRotatedRectanglePoints(brique: Brique): Point[] {
+  const points: Point[] = [];
+  const angle = brique.alpha * Math.PI / 180; // Conversion de degrés en radians
+  const cx = brique.coord.x + brique.width / 2; // Centre x de la brique
+  const cy = brique.coord.y + brique.height / 2; // Centre y de la brique
+
+  // Coins de la brique avant rotation
+  const corners = [
+      { x: brique.coord.x, y: brique.coord.y },
+      { x: brique.coord.x + brique.width, y: brique.coord.y },
+      { x: brique.coord.x + brique.width, y: brique.coord.y + brique.height },
+      { x: brique.coord.x, y: brique.coord.y + brique.height }
+  ];
+
+  // Calculer les coins rotés
+  corners.forEach(corner => {
+      const rotatedX = Math.cos(angle) * (corner.x - cx) - Math.sin(angle) * (corner.y - cy) + cx;
+      const rotatedY = Math.sin(angle) * (corner.x - cx) + Math.cos(angle) * (corner.y - cy) + cy;
+      points.push({ x: rotatedX, y: rotatedY });
+  });
+
+  return points;
+}
+
+function arePolygonsColliding(points1: Point[], points2: Point[]): boolean {
+  // Implémenter SAT pour vérifier la collision entre deux polygones
+  const axes = getAxes(points1).concat(getAxes(points2));
+
+  for (let axis of axes) {
+      if (!isOverlapping(projectPolygon(axis, points1), projectPolygon(axis, points2))) {
+          return false; // Aucune collision si un axe séparateur est trouvé
+      }
+  }
+  return true; // Collision détectée
+}
+
+export const  collideRectangleRectangle= (brique1: Brique, brique2: Brique) => {
+  const points1 = getRotatedRectanglePoints(brique1);
+  console.log("points---1", points1);
+  const points2 = getRotatedRectanglePoints(brique2);
+  console.log("points---2", points2);
+
+  if (arePolygonsColliding(points1, points2)) {
+      console.log("Collision détectée avec les briques");
+      handleCollisionResponse(brique1, brique2); // Gérer la réponse à la collision ici
+  }
+};
+
+function getAxes(points: Point[]): Point[] {
+  const axes = [];
+  for (let i = 0; i < points.length; i++) {
+      const p1 = points[i];
+      const p2 = points[(i + 1) % points.length]; // Pour créer un axe avec le point suivant (cycle au premier point)
+      const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+      const normal = { x: -edge.y, y: edge.x }; // Perpendiculaire à l'arête
+      const length = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+      normal.x /= length;
+      normal.y /= length;
+      axes.push(normal);
+  }
+  return axes;
+}
+
+function projectPolygon(axis: Point, points: Point[]): { min: number; max: number } {
+  let min = Infinity;
+  let max = -Infinity;
+
+  points.forEach(point => {
+      let projection = point.x * axis.x + point.y * axis.y;
+      if (projection < min) min = projection;
+      if (projection > max) max = projection;
+  });
+
+  return { min, max };
+}
+
+function isOverlapping(projection1: { min: number; max: number }, projection2: { min: number; max: number }): boolean {
+  return !(projection1.max < projection2.min || projection2.max < projection1.min);
+}
+
+function handleCollisionResponse(brique1: Brique, brique2: Brique) {
+  // Réponse simplifiée : ajuster les positions et vitesses pour "résoudre" la collision
+  // Cela peut être raffiné selon les besoins spécifiques du jeu
+  brique1.coord.dx *= -0.5;
+  brique2.coord.dx *= -0.5;
+  brique1.coord.dy *= -0.5;
+  brique2.coord.dy *= -0.5;
+}
+
+// export const collideRectangleRectangle = (brique1: Brique, brique2: Brique) => {
+//   const points1 = getRotatedRectanglePoints(brique1);
+//   const points2 = getRotatedRectanglePoints(brique2);
+
+//   if (arePolygonsColliding(points1, points2)) {
+//       handleCollisionResponse(brique1, brique2);
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function checkStacking(brique: Brique, otherBriques: Array<Brique>): boolean {
     otherBriques.forEach((other) => {
         if (brique !== other &&
@@ -580,34 +706,34 @@ function checkStacking(brique: Brique, otherBriques: Array<Brique>): boolean {
  * Handles collision detection and response between two rectangles, including
  * the application of friction, restitution, and checking for resting conditions.
  */
-export const collideRectangleRectangle = (brique1: Brique, brique2: Brique, groundY: number, otherBriques: Array<Brique>) => {
+// export const collideRectangleRectangle = (brique1: Brique, brique2: Brique, groundY: number, otherBriques: Array<Brique>) => {
   
-  // Check for and handle collision
-  if (areRectanglesColliding(brique1, brique2)) {
-      // Simplified response: Adjust positions and velocities
-      let overlapX = calculateOverlap(brique1.coord.x, brique1.width, brique2.coord.x, brique2.width);
-      let overlapY = calculateOverlap(brique1.coord.y, brique1.height, brique2.coord.y, brique2.height);
+//   // Check for and handle collision
+//   if (areRectanglesColliding(brique1, brique2)) {
+//       // Simplified response: Adjust positions and velocities
+//       let overlapX = calculateOverlap(brique1.coord.x, brique1.width, brique2.coord.x, brique2.width);
+//       let overlapY = calculateOverlap(brique1.coord.y, brique1.height, brique2.coord.y, brique2.height);
 
-      // Resolve the smaller overlap
-      if (overlapX < overlapY) {
-        brique1.coord.dx = -brique1.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
-        brique2.coord.dx = -brique2.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
-          adjustPositionsX(brique1, brique2, overlapX);
-      } else {
-        brique1.coord.dy = -brique1.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
-        brique2.coord.dy = -brique2.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
-          adjustPositionsY(brique1, brique2, overlapY);
-      }
-  }
+//       // Resolve the smaller overlap
+//       if (overlapX < overlapY) {
+//         brique1.coord.dx = -brique1.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
+//         brique2.coord.dx = -brique2.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
+//           adjustPositionsX(brique1, brique2, overlapX);
+//       } else {
+//         brique1.coord.dy = -brique1.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
+//         brique2.coord.dy = -brique2.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
+//           adjustPositionsY(brique1, brique2, overlapY);
+//       }
+//   }
 
-  // Apply ground friction and check resting conditions
-  applyGroundFrictionAndResting(brique1, groundY);
-  applyGroundFrictionAndResting(brique2, groundY);
+//   // Apply ground friction and check resting conditions
+//   applyGroundFrictionAndResting(brique1, groundY);
+//   applyGroundFrictionAndResting(brique2, groundY);
 
-  // Check for stacking
-  brique1.resting = checkStacking(brique1, otherBriques) || brique1.resting;
-  brique2.resting = checkStacking(brique2, otherBriques) || brique2.resting;
-}
+//   // Check for stacking
+//   brique1.resting = checkStacking(brique1, otherBriques) || brique1.resting;
+//   brique2.resting = checkStacking(brique2, otherBriques) || brique2.resting;
+// }
 
 
 function calculateOverlap(pos1: number, size1: number, pos2: number, size2: number): number {
@@ -833,7 +959,7 @@ export const step = (state: State) => {
   
   state.briques.forEach((brique, i, arr) => {
     arr.slice(i + 1).forEach((other) => {
-      collideRectangleRectangle(other,brique, state.size.height,state.briques);
+      collideRectangleRectangle(other,brique);
     });
   });
 

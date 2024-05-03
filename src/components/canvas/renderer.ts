@@ -92,7 +92,8 @@ const drawBrique = (
 ) => {
   ctx.save(); // Save the current context state
   ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
-  ctx.rotate(alpha); // Rotate the context by alpha
+  const angle = -alpha * (Math.PI / 180);
+  ctx.rotate(angle); // Rotate the context by alpha
 
   if (initColor !== COLORS.RED) {
       ctx.beginPath();

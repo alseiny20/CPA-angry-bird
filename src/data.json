@@ -313,9 +313,25 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 650,
+              "y": 500,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+
+          {
+            "life": 200,
+            "weight": 3,
+            "coord": {
+              "x": 530,
               "y": 500,
               "dx": 0,
               "dy": 0
