@@ -184,7 +184,9 @@
             },
             "width": 150,
             "height": 50,
-            "color": "#0000ff"
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
@@ -197,10 +199,13 @@
             },
             "width": 400,
             "height": 50,
-            "color": "#0000ff"
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
           }
         ]
       },
+
       {
         "id": 3,
         "pigs": [
@@ -224,10 +229,55 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 200,
+            "weight": 20,
             "coord": {
               "x": 650,
-              "y": 650,
+              "y": 500,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 200,
+            "weight": 20,
+            "coord": {
+              "x": 630,
+              "y": 0,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 200,
+            "height": 50,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 200,
+            "weight": 20,
+            "coord": {
+              "x": 550,
+              "y": 200,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 300,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 200,
+            "weight": 20,
+            "coord": {
+              "x": 550,
+              "y": 500,
               "dx": 0,
               "dy": 0
             },

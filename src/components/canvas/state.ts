@@ -2,6 +2,7 @@ import { stat } from 'fs';
 import * as conf from './conf'
 import path from 'path';
 export type Coord = { x: number; y: number; dx: number; dy: number }
+export type Point = { x: number; y: number }
 export type Ball = {
   coord: Coord;
   life: number;
@@ -142,7 +143,7 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
   // const rotationAngle = unbalanceTorque / brique.weight; // Angle of rotation due to unbalance
 
   // Apply gravity to the gravity center
-  coord.dy += conf.GRAVITY * brique.weight;
+  coord.dy += conf.GRAVITY 
 
   // Apply air resistance based on direction to the gravity center
   const airFriction = coord.dy > 0 ? conf.AIR_FRICTION_DESCENDING : conf.AIR_FRICTION_ASCENDING;
@@ -220,7 +221,11 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
     }else if (brique.dr < 0) {
       brique.dr += 0.001
     }
-    brique.alpha += brique.dr
+    console.log("dr", brique.dr);
+    // valeur absolue de dr 
+    if (Math.abs(brique.dr) > 0.001) {
+      brique.alpha += brique.dr
+    }
 
     return {  
         ...brique,
@@ -410,77 +415,71 @@ const collide = (o1: Coord, o2: Coord) =>
 }
 
 export const collideBallBrick = (ball: Ball, brick: Brique) => {
-  // Convert brick angle from degrees to radians for transformations
-  const angle = -brick.alpha * Math.PI / 180;
+    // Convert brick angle from degrees to radians for transformations
+    const angle = -brick.alpha * Math.PI / 180;
 
-  // Calculate the coordinates of the ball relative to the rotated brick
-  const rotatedBallX = Math.cos(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) -
-                       Math.sin(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
-                       (brick.coord.x + brick.width / 2);
+    // Calculate the coordinates of the ball relative to the rotated brick
+    const rotatedBallX = Math.cos(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) -
+                         Math.sin(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
+                         (brick.coord.x + brick.width / 2);
 
-  const rotatedBallY = Math.sin(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) +
-                       Math.cos(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
-                       (brick.coord.y + brick.height / 2);
+    const rotatedBallY = Math.sin(angle) * (ball.coord.x - (brick.coord.x + brick.width / 2)) +
+                         Math.cos(angle) * (ball.coord.y - (brick.coord.y + brick.height / 2)) +
+                         (brick.coord.y + brick.height / 2);
 
-  // Calculate nearest point on the rotated brick to the rotated ball position
-  const nearestX = Math.max(brick.coord.x, Math.min(rotatedBallX, brick.coord.x + brick.width));
-  const nearestY = Math.max(brick.coord.y, Math.min(rotatedBallY, brick.coord.y + brick.height));
+    // Calculate nearest point on the rotated brick to the rotated ball position
+    const nearestX = Math.max(brick.coord.x, Math.min(rotatedBallX, brick.coord.x + brick.width));
+    const nearestY = Math.max(brick.coord.y, Math.min(rotatedBallY, brick.coord.y + brick.height));
 
-  const deltaX = rotatedBallX - nearestX;
-  const deltaY = rotatedBallY - nearestY;
-  const distanceSquared = deltaX * deltaX + deltaY * deltaY;
-  const radiusSquared = ball.radius * ball.radius;
+    const deltaX = rotatedBallX - nearestX;
+    const deltaY = rotatedBallY - nearestY;
+    const distanceSquared = deltaX * deltaX + deltaY * deltaY;
+    const radiusSquared = ball.radius * ball.radius;
 
-  if (distanceSquared <= radiusSquared) {
-      const distance = Math.sqrt(distanceSquared);
-      const nx = deltaX / distance;
-      const ny = deltaY / distance;
+    if (distanceSquared <= radiusSquared) {
+        const distance = Math.sqrt(distanceSquared);
+        const nx = deltaX / distance;
+        const ny = deltaY / distance;
 
-      // Calculate relative velocity
-      const relativeVelX = ball.coord.dx - brick.coord.dx;
-      const relativeVelY = ball.coord.dy - brick.coord.dy;
-      const velAlongNormal = relativeVelX * nx + relativeVelY * ny;
+        // Calculate relative velocity
+        const relativeVelX = ball.coord.dx - brick.coord.dx;
+        const relativeVelY = ball.coord.dy - brick.coord.dy;
+        const velAlongNormal = relativeVelX * nx + relativeVelY * ny;
 
-      if (velAlongNormal < 0 && !ball.invincible) {
-          // Adjust ball position to resolve collision
-          const overlap = ball.radius - distance;
-          ball.coord.x += overlap * nx;
-          ball.coord.y += overlap * ny;
+        if (velAlongNormal < 0 && !ball.invincible) {
+            // Adjust ball position to resolve collision
+            const overlap = ball.radius - distance;
+            ball.coord.x += overlap * nx;
+            ball.coord.y += overlap * ny;
 
-          // Decrease brick strength or destroy it
-          brick.life--;
+            // Decrease brick strength or destroy it
+            brick.life--;
 
-          if (brick.life <= 0) {
-              // Handle brick destruction
-          }
+            if (brick.life <= 0) {
+                // Handle brick destruction
+            }
 
-          // Calculate impulse and update ball velocity
-          const impulse = -(1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
-          ball.coord.dx += (impulse / ball.weight) * nx;
-          ball.coord.dy += (impulse / ball.weight) * ny;
+            // Calculate impulse and update ball velocity
+            const impulse = -(1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
+            ball.coord.dx += (impulse / ball.weight) * nx;
+            ball.coord.dy += (impulse / ball.weight) * ny;
 
-          ball.invincible = 1; // Prevent immediate re-collision
+            ball.invincible = 1; // Prevent immediate re-collision
 
-          // Update brick velocity (Push back the brick)
-          const brickImpulse = 20 * (1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
-          brick.coord.dx += (brickImpulse / brick.weight) * nx;
-          brick.coord.dy += (brickImpulse / brick.weight) * ny;
+            // Calculate rotational impulse based on the impact point, adjusted for lever arm effect
+            const centerOfBrickX = brick.coord.x + brick.width / 2;
+            const centerOfBrickY = brick.coord.y + brick.height / 2;
+            const leverArmX = nearestX - centerOfBrickX;
+            const leverArmY = nearestY - centerOfBrickY;
+            const torque = leverArmX * ny - leverArmY * nx; // Torque calculation: cross product of lever arm and normal
 
-          // Rotation based on impact point
-          // const rotationMagnitude = 0.05; // Adjust this value based on desired rotation sensitivity
-          // const rotationAngle = rotationMagnitude * (relativeVelX * ny - relativeVelY * nx); // Cross product for torque direction
-          // brick.alpha += rotationAngle * (180 / Math.PI); // Convert radians to degrees if necessary
-
-          // Calculate rotational impulse based on the impact point, adjusted for lever arm effect
-          const leverArm = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-          const rotationalImpulse = leverArm * (relativeVelX * ny - relativeVelY * nx);
-          brick.dr += rotationalImpulse / (brick.weight * leverArm); // Adjust rotational velocity
-      }
-  } else {
-      ball.invincible = 0; // Reset invincibility when not colliding
-  }
+            // Adjust rotational velocity based on the direction of the torque
+            brick.dr -= torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
+        }
+    } else {
+        ball.invincible = 0; // Reset invincibility when not colliding
+    }
 };
-
 
 
 
@@ -569,6 +568,33 @@ function areRectanglesColliding(brique1: Brique, brique2: Brique): boolean {
       brique1.coord.y < brique2.coord.y + brique2.height &&
       brique1.coord.y + brique1.height > brique2.coord.y;
 }
+
+
+function findCollisionNormal(brique1: Brique, brique2: Brique): Point {
+  let center1 = {
+      x: brique1.coord.x + brique1.width / 2,
+      y: brique1.coord.y + brique1.height / 2
+  };
+  let center2 = {
+      x: brique2.coord.x + brique2.width / 2,
+      y: brique2.coord.y + brique2.height / 2
+  };
+
+  let lineBetweenCenters = {
+      x: center2.x - center1.x,
+      y: center2.y - center1.y
+  };
+
+  let length = Math.sqrt(lineBetweenCenters.x * lineBetweenCenters.x + lineBetweenCenters.y * lineBetweenCenters.y);
+  let normal = { x: -lineBetweenCenters.y / length, y: lineBetweenCenters.x / length };
+
+  return normal;
+}
+
+
+
+
+
 
 
 const checkBallBriqueCollision = (circle: Ball, rect: Brique) => {
@@ -758,19 +784,7 @@ export const step = (state: State) => {
     });
    
   })
-  state.pigs.forEach((ball) => {
-    state.briques.forEach((brique) => {
-      // if (checkBallBriqueCollision(ball, brique)) {
-      //   console.log("collision detected");
-      //   // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
-      //   handleBallBriqueCollision(ball, brique);
-      //   // ball.coord = a;
-      // }
-      // collideBallBrick(ball, brique);
-      // collideBallRectangle(ball,brique,state.size.height,state.briques);
-      // }
-    });
-  });
+  
   state.briques.forEach((brique, i, arr) => {
     arr.slice(i + 1).forEach((other) => {
       collideRectangleRectangle(other,brique, state.size.height,state.briques);
@@ -821,6 +835,7 @@ const check_endTurn = (state: State) => {
 //   }
 //   return false
 // }
+
 
 export const click =
   (state: State) =>

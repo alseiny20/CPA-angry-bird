@@ -52,3 +52,4 @@ export const GROUND_FRICTION = 1 - MU_K; // Calcule la friction au sol à partir
 
 export const MASS_BALL = 20; // Masse de la balle
 export const MASS_BRIQUE = 40; // Masse de la brique
+export const MINROTATION = 0.1; // Minimum rotation
