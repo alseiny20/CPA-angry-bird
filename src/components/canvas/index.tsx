@@ -112,7 +112,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     radius : conf.RADIUS
   }));
 
-  let { pigs, briques }  = createEntities(3);
+  let { pigs, briques }  = createEntities(4);
   // const pigs = new Array(conf.pig_numbers).fill(null).map((_) => ({
   //   life: conf.PIGLIFE,
   //   resting: true,

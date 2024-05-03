@@ -288,6 +288,45 @@
             "dr": 0
           }
         ]
+      },
+
+      {
+        "id": 4,
+        "pigs": [
+          {
+            "life": 100,
+            "resting": true,
+            "target": true,
+            "weight": 1.2,
+            "coord": {
+              "x": 200,
+              "y": 700,
+              "dx": 0,
+              "dy": 0
+            },
+            "radius": 30,
+            "alpha": 0,
+            "color": "#ff0000",
+            "image": "king_pig_image.png"
+          }
+        ],
+        "bricks": [
+          {
+            "life": 200,
+            "weight": 50,
+            "coord": {
+              "x": 650,
+              "y": 500,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          }
+        ]
       }
     ]
   }
