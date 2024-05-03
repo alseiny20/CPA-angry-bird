@@ -39,7 +39,7 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 800,
               "y": 800,
@@ -49,11 +49,13 @@
             "width": 100,
             "height": 50,
             "color": "#0000ff",
-            "image": "../brick.png"
+            "image": "../brick.png",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 600,
               "y": 800,
@@ -63,11 +65,13 @@
             "width": 100,
             "height": 50,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 650,
               "y": 400,
@@ -77,11 +81,13 @@
             "width": 20,
             "height": 150,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 850,
               "y":300,
@@ -91,12 +97,14 @@
             "width": 20,
             "height": 150,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           }
           ,
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 1150,
               "y":400,
@@ -106,11 +114,13 @@
             "width": 20,
             "height": 150,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 1250,
               "y":130,
@@ -120,11 +130,13 @@
             "width": 250,
             "height": 150,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 1450,
               "y":900,
@@ -134,7 +146,9 @@
             "width": 40,
             "height": 150,
             "color": "#0000ff",
-            "image": "./brick.png"
+            "image": "./brick.png",
+            "alpha": 0,
+            "dr": 0
           }
         ]
       },
@@ -196,7 +210,7 @@
             "target": true,
             "weight": 1.2,
             "coord": {
-              "x": 700,
+              "x": 200,
               "y": 700,
               "dx": 0,
               "dy": 0
@@ -210,7 +224,7 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 50,
+            "weight": 200,
             "coord": {
               "x": 650,
               "y": 650,
@@ -220,7 +234,8 @@
             "width": 50,
             "height": 100,
             "color": "#0000ff",
-            "alpha": 0
+            "alpha": 0,
+            "dr": 0
           }
         ]
       }

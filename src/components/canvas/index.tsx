@@ -45,7 +45,7 @@ function createEntities(levelId: number) {
     image: pigConfig.image,
   }));
 
-  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:string, alpha : number}) => ({
+  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:string, alpha : number, dr: number}) => ({
     life: brickConfig.life,
     weight: brickConfig.weight,
     coord: brickConfig.coord,
@@ -53,7 +53,8 @@ function createEntities(levelId: number) {
     height: brickConfig.height,
     color: brickConfig.color,
     image : brickConfig.image,
-    alpha : brickConfig.alpha
+    alpha : brickConfig.alpha,
+    dr : brickConfig.dr
 
   }));
 
@@ -111,7 +112,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     radius : conf.RADIUS
   }));
 
-  let { pigs, briques }  = createEntities(3);
+  let { pigs, briques }  = createEntities(1);
   // const pigs = new Array(conf.pig_numbers).fill(null).map((_) => ({
   //   life: conf.PIGLIFE,
   //   resting: true,

@@ -37,6 +37,7 @@ export type Brique = {
   weight: number; // Ajout du poids de la brique
   life: number;
   alpha: number;
+  dr: number;
   resting?: boolean;
   initDrag?: Coord;
   selectect?: boolean;
@@ -212,7 +213,16 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
         }
     }
 
-    return {
+    // Update alpha based on the decay rate
+    // on applique la friction de l'air
+    if (brique.dr > 0) {
+      brique.dr -= 0.001
+    }else if (brique.dr < 0) {
+      brique.dr += 0.001
+    }
+    brique.alpha += brique.dr
+
+    return {  
         ...brique,
         coord: coord,
     };
@@ -450,16 +460,27 @@ export const collideBallBrick = (ball: Ball, brick: Brique) => {
           ball.coord.dy += (impulse / ball.weight) * ny;
 
           ball.invincible = 1; // Prevent immediate re-collision
+
           // Update brick velocity (Push back the brick)
           const brickImpulse = 20 * (1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
-
           brick.coord.dx += (brickImpulse / brick.weight) * nx;
           brick.coord.dy += (brickImpulse / brick.weight) * ny;
+
+          // Rotation based on impact point
+          // const rotationMagnitude = 0.05; // Adjust this value based on desired rotation sensitivity
+          // const rotationAngle = rotationMagnitude * (relativeVelX * ny - relativeVelY * nx); // Cross product for torque direction
+          // brick.alpha += rotationAngle * (180 / Math.PI); // Convert radians to degrees if necessary
+
+          // Calculate rotational impulse based on the impact point, adjusted for lever arm effect
+          const leverArm = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          const rotationalImpulse = leverArm * (relativeVelX * ny - relativeVelY * nx);
+          brick.dr += rotationalImpulse / (brick.weight * leverArm); // Adjust rotational velocity
       }
   } else {
       ball.invincible = 0; // Reset invincibility when not colliding
   }
 };
+
 
 
 
@@ -517,6 +538,7 @@ export const collideRectangleRectangle = (brique1: Brique, brique2: Brique, grou
   brique1.resting = checkStacking(brique1, otherBriques) || brique1.resting;
   brique2.resting = checkStacking(brique2, otherBriques) || brique2.resting;
 }
+
 
 function calculateOverlap(pos1: number, size1: number, pos2: number, size2: number): number {
   if (pos1 < pos2) {
@@ -576,10 +598,10 @@ const checkBallBriqueCollision = (circle: Ball, rect: Brique) => {
 };
 
 const handleBallBriqueCollision = (ball: Ball, brique: Brique) => {
-  if (!checkBallBriqueCollision(ball, brique)) {
-    console.log("handleBallBriqueCollision: no collision detected");
-    return;
-  }
+  // if (!checkBallBriqueCollision(ball, brique)) {
+  //   console.log("handleBallBriqueCollision: no collision detected");
+  //   return;
+  // }
   
   // Determine the side of the brick where the collision occurred
   let collisionSide = determineCollisionSide(ball, brique);
@@ -744,7 +766,7 @@ export const step = (state: State) => {
       //   handleBallBriqueCollision(ball, brique);
       //   // ball.coord = a;
       // }
-      collideBallBrick(ball, brique);
+      // collideBallBrick(ball, brique);
       // collideBallRectangle(ball,brique,state.size.height,state.briques);
       // }
     });
