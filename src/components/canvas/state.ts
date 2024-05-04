@@ -1,4 +1,3 @@
-import { stat } from 'fs';
 import * as conf from './conf'
 export type Coord = { x: number; y: number; dx: number; dy: number }
 export type Point = { x: number; y: number }
@@ -125,9 +124,6 @@ const iterate = (bound: Size) => (ball: Ball, briques: Array<Brique>) => {
 
   ball.invincible = ball.invincible ? ball.invincible - 1 : 0;
 
-  // Ajuster la position si nécessaire avec checkPossibleMove
-  // const adjustedPos = checkPossibleMove(ball, briques, bound);
-
   return {
       ...ball,
       coord: coord
@@ -156,145 +152,7 @@ export function getRotatedRectanglePoints(brique: Brique): Point[] {
 
   return points;
 }
-const getRotatedCorners = (brick: Brique): Point[] => {
-  const angleInRadians = -brick.alpha * (Math.PI / 180); // Convert angle to radians
 
-  // Center of the brick
-  const centerX = brick.coord.x + brick.width / 2;
-  const centerY = brick.coord.y + brick.height / 2;
-
-  // Corners of the brick
-  const corners: Point[] = [
-    { x: brick.coord.x, y: brick.coord.y }, // Top-left
-    { x: brick.coord.x + brick.width, y: brick.coord.y }, // Top-right
-    { x: brick.coord.x + brick.width, y: brick.coord.y + brick.height }, // Bottom-right
-    { x: brick.coord.x, y: brick.coord.y + brick.height } // Bottom-left
-  ];
-
-  // Rotate each corner around the center
-  const rotatedCorners = corners.map(corner => {
-    const xRel = corner.x - centerX;
-    const yRel = corner.y - centerY;
-
-    return {
-      x: centerX + xRel * Math.cos(angleInRadians) - yRel * Math.sin(angleInRadians),
-      y: centerY + xRel * Math.sin(angleInRadians) + yRel * Math.cos(angleInRadians)
-    };
-  });
-
-  return rotatedCorners;
-};
-// const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Brique>) => {
-
-//   //brique.corner =  getRotatedCorners(brique);
-//   // console.log(brique.corner)
-//   if (brique.resting) {
-//     // // Check if the brick is flat (parallel to the ground)
-//     return brique;
-//   }
-
-//   const { coord } = brique;
-//   const gravityCenterX = coord.x + brique.width / 2;
-//   const gravityCenterY = coord.y + brique.height / 2;
-  
-
-  
-//   // Calculate collision point with other bricks
-//   // const collisionPoint = otherBriques.reduce<Point | null>((collision, other) => {
-//   //   if (brique !== other) {
-//   //     const point = calculateCollisionPoint(brique, other);
-//   //     return point ? point : collision;
-//   //   }
-//   //   return collision;
-//   // }, null);
-
-//   // // Apply gravity and rotation
-//   // applyGravityAndRotation(brique, collisionPoint);
-
-
-//   // Apply gravity
-//   coord.dy += conf.GRAVITY * brique.weight;
-
-//   // Apply air resistance
-//   const airFriction = coord.dy > 0 ? conf.AIR_FRICTION_DESCENDING : conf.AIR_FRICTION_ASCENDING;
-//   coord.dy *= airFriction;
-//   coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
-
-//   // Update positions
-//   const newGravityCenterX = gravityCenterX + coord.dx;
-//   const newGravityCenterY = gravityCenterY + coord.dy;
-
-//   // Update brick position based on gravity center
-//   coord.x = newGravityCenterX - brique.width / 2;
-//   coord.y = newGravityCenterY - brique.height / 2;
-
-//   // Handle collisions with boundaries
-//   if (coord.x < 0 || coord.x + brique.width > bound.width) {
-//     coord.dx *= -conf.COEFFICIENT_OF_RESTITUTION;
-//     coord.x = Math.max(coord.x, 0);
-//     coord.x = Math.min(coord.x, bound.width - brique.width);
-//   }
-
-//   if (coord.y < 0 || coord.y + brique.height > bound.height) {
-//     coord.dy *= -conf.COEFFICIENT_OF_RESTITUTION;
-//     coord.y = Math.max(coord.y, 0);
-//     coord.y = Math.min(coord.y, bound.height - brique.height);
-//   }
-  
-  
-//   // Resting conditions
-//   const restingOnGround = coord.y + brique.height >= bound.height;
-//   const restingOnBrick = otherBriques.some((other) => {
-//     return (
-//       brique !== other &&
-//       coord.y + brique.height >= other.coord.y &&
-//       coord.y <= other.coord.y + other.height &&
-//       coord.x + brique.width > other.coord.x &&
-//       coord.x < other.coord.x + other.width
-//     );
-//   });
-
-  
-//   if (restingOnGround || restingOnBrick) {
-//     coord.dy = 0;
-//     coord.y = restingOnGround
-//       ? bound.height - brique.height
-//       : Math.min(
-//           ...otherBriques
-//             .filter(
-//               (other) =>
-//                 brique !== other &&
-//                 coord.y + brique.height >= other.coord.y &&
-//                 coord.y <= other.coord.y + other.height &&
-//                 coord.x + brique.width > other.coord.x &&
-//                 coord.x < other.coord.x + other.width
-//             )
-//             .map((other) => other.coord.y - brique.height)
-//         );
-
-//     // Apply ground friction if resting on ground
-//     if (restingOnGround) {
-//       coord.dx *= conf.GROUND_FRICTION;
-//     }
-//   } 
-
-//   // Update alpha based on the decay rate
-//   if (brique.dr > 0) {
-//     brique.dr -= 0.001;
-//   } else if (brique.dr < 0) {
-//     brique.dr += 0.001;
-//   }
-//   // Absolute value of dr
-//   if (Math.abs(brique.dr) > 0.001) {
-//     brique.alpha += brique.dr;
-//   }
-
-//   return {
-//     ...brique,
-//     coord: coord,
-//     corner :  getRotatedCorners(brique)
-//   };
-// };
 const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Brique>) => {
   if (brique.resting) {
       return brique;
@@ -304,8 +162,6 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
 let gravityCenterX = coord.x + brique.width / 2; // Center of the brick along the x-axis
 let gravityCenterY = coord.y + brique.height / 2; // Center of the brick along the y-axis
 //   // Calculate torque and rotation angle based on unbalance (for simplicity, assuming a linear relationship)
-// const unbalanceTorque = brique.weight * conf.GRAVITY * unbalanceFactor; // Adjust unbalanceFactor based on your logic
-// const rotationAngle = unbalanceTorque / brique.weight; // Angle of rotation due to unbalance
 
 // Apply gravity to the gravity center
 coord.dy += conf.GRAVITY * brique.weight;
@@ -322,14 +178,6 @@ gravityCenterY += coord.dy;
 // Update brick position based on gravity center
 coord.x = gravityCenterX - brique.width / 2;
 coord.y = gravityCenterY - brique.height / 2;
-
-  // coord.dy += conf.GRAVITY * brique.weight;
-  // const airFriction = coord.dy > 0 ? conf.AIR_FRICTION_DESCENDING : conf.AIR_FRICTION_ASCENDING;
-  // coord.dy *= airFriction;
-  // coord.dx *= conf.AIR_FRICTION_HORIZONTAL;
-
-  // coord.x += brique.coord.dx;
-  // coord.y += brique.coord.dy;
 
   // Handle collisions with boundaries
   if (coord.x < 0 || coord.x + brique.width > bound.width) {
@@ -386,17 +234,20 @@ coord.y = gravityCenterY - brique.height / 2;
   }else if (brique.dr < 0) {
     brique.dr += 0.001
   }
-  console.log("dr", brique.dr);
+  brique.alpha = brique.alpha % 180
   // valeur absolue de dr 
   if (Math.abs(brique.dr) > 0.001) {
     brique.alpha += brique.dr
   }
+  // on clean les brique hors du cadre
+  cleanUnconformePosition(brique, bound.width, bound.height);
 
   return {  
       ...brique,
       coord: coord,
   };
 };
+
   const iteratePig = (bound: Size) => (pig: Pig) => {
     let coord = { ...pig.coord };
     // appliation la gravité
@@ -452,6 +303,7 @@ coord.y = gravityCenterY - brique.height / 2;
       coord: coord,
     };
   };
+
 const collide = (o1: Coord, o2: Coord) =>
   dist2(o1, o2) < Math.pow(2 * conf.RADIUS, 2)
 
@@ -488,7 +340,7 @@ const collide = (o1: Coord, o2: Coord) =>
 }
 
 
-export const collideBallBrick = (ball: Ball, brick: Brique) => {
+export const collideBallBrick = (ball: Ball, brick: Brique): {collide: boolean, ball: Ball} => {
   // Convert brick angle from degrees to radians for transformations
   const angle = -brick.alpha * Math.PI / 180;
 
@@ -529,17 +381,21 @@ export const collideBallBrick = (ball: Ball, brick: Brique) => {
           // Decrease brick strength or destroy it
           brick.life--;
 
+          if (brick.life <= 0) {
+              // Handle brick destruction
+          }
+
           // Calculate impulse and update ball velocity
-          const impulse = -(0.7 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
+          const impulse = -(1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
           ball.coord.dx += (impulse / ball.weight) * nx;
           ball.coord.dy += (impulse / ball.weight) * ny;
 
           ball.invincible = 1; // Prevent immediate re-collision
 
           // Update brick velocity (Push back the brick)
-          const brickImpulse = (2 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
-          brick.coord.dx += (brickImpulse / brick.weight) * nx + conf.GRAVITY ;
-          brick.coord.dy += (brickImpulse / brick.weight) * ny + conf.GRAVITY ;
+          const brickImpulse = (1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
+          brick.coord.dx += (brickImpulse / brick.weight) * nx;
+          brick.coord.dy += (brickImpulse / brick.weight) * ny;
 
           // Calculate rotational impulse based on the impact point, adjusted for lever arm effect
             const centerOfBrickX = brick.coord.x + brick.width / 2;
@@ -550,42 +406,15 @@ export const collideBallBrick = (ball: Ball, brick: Brique) => {
 
             // Adjust rotational velocity based on the direction of the torque
             brick.dr -= torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
-            // Apply a small additional rotation to the brick
-      // const rotationFactor = 15; // Adjust rotation factor as needed
-      // brick.alpha += rotationFactor * (torque > 0 ? 1 : -1); // Rotate based on the torque direction
-      }
+            return {collide : true, ball: ball};  
+        }
   } else {
       ball.invincible = 0; // Reset invincibility when not colliding
   }
-  
-  // if(brick.coord.y + brick.height >= ground && brick.coord.dy>0){
-  //   brick.life -=0;
-  // }
+  return {collide : false, ball: ball};
 };
 
-function applyGroundFrictionAndResting(obj: any, groundY: number) {
-    if (Math.abs(obj.dy) < conf.VELOCITY_THRESHOLD && (obj.y + obj.height >= groundY || obj.y + obj.radius >= groundY)) {
-        obj.dy = 0; // Object is at rest vertically
-        obj.dx *= conf.GROUND_FRICTION; // Apply horizontal friction
 
-        if (Math.abs(obj.dx) < conf.VELOCITY_THRESHOLD) {
-            obj.dx = 0; // Object comes to rest horizontally
-            obj.resting = true;
-        }
-    }
-}
-
-function checkStacking(brique: Brique, otherBriques: Array<Brique>): boolean {
-    otherBriques.forEach((other) => {
-        if (brique !== other &&
-          brique.coord.x < other.coord.x + other.width && brique.coord.x + brique.width > other.coord.x &&
-            Math.abs(brique.coord.y + brique.height - other.coord.y) < conf.VELOCITY_THRESHOLD) {
-            return true;
-        }
-    });
-    return false;
-  }
-  
  
 function arePolygonsColliding(points: Point[], brique: Brique): boolean {
   // Implémenter SAT pour vérifier la collision un point et un polygone
@@ -617,27 +446,30 @@ function arePolygonsColliding(points: Point[], brique: Brique): boolean {
 }
 export const collideRectangleRectangle= (brique1: Brique, brique2: Brique) => {
   const points1 = getRotatedRectanglePoints(brique1);
-  console.log("points---1", points1);
-
   const points2 = getRotatedRectanglePoints(brique2);
-  console.log("points---2", points2);
 
   if (arePolygonsColliding(points1, brique2)) {
       handleCollisionResponse(brique1, brique2);
   }
+  if (arePolygonsColliding(points2, brique1)) {
+    handleCollisionResponse(brique2, brique1);
+  }
 };
 
-function pointBall(point: Point ): Ball {
+function pointBall(point: Point, dx: number, dy: number): Ball {
   return {
     coord: {
       x: point.x,
       y: point.y,
-      dx: 0,
-      dy: 0
+      dx: dx,
+      dy: dy
     },
-    life: 1,
+    life: 10,
     weight: 1.2,
-    radius: 10
+    radius: 30,
+    resting: false,
+    invincible: 0
+
   };
 }
 
@@ -674,20 +506,44 @@ function isOverlapping(projection1: { min: number; max: number }, projection2: {
 }
 
 function handleCollisionResponse(brique1: Brique, brique2: Brique) {
-  // Réponse simplifiée : ajuster les positions et vitesses pour "résoudre" la collision
-  // Cela peut être raffiné selon les besoins spécifiques du jeu
-  const dxMean = (brique1.coord.dx + brique2.coord.dx) / 2;
-  const dyMean = (brique1.coord.dy + brique2.coord.dy) / 2;
+  const points1 = getRotatedRectanglePoints(brique1);
+  const points2 = getRotatedRectanglePoints(brique2);
+  let testColide;
 
-  brique1.coord.dx = dxMean;
-  brique2.coord.dx = dxMean;
-  brique1.coord.dy = dyMean;
-  brique2.coord.dy = dyMean;
+  // Collision check et réaction pour chaque point de brique1 contre brique2
+  for (const point of points1) {
+    testColide = collideBallBrick(pointBall(point, brique1.coord.dx, brique1.coord.dy), brique2)
 
+    //  si il ya eu une colision on ajuste la position de la brique
+    if (testColide.collide) {
+      // on tue la brique qui a la plus grande viteese
+      brique1.coord.dx = testColide.ball.coord.dx
+      brique1.coord.dy = testColide.ball.coord.dy
+      const vitess1 = Math.sqrt(brique1.coord.dx * brique1.coord.dx + brique1.coord.dy * brique1.coord.dy)
+      const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
+      console.log("vitess1 et deux", vitess1, vitess2)
 
-  brique1.dr *= -0.5;
-  brique2.dr *= -0.5;
-} 
+      brique2.life = -1
+    }
+  }
+
+  if (!testColide?.collide) { // Seulement vérifier la deuxième brique si aucune collision n'a été trouvée auparavant
+    for (const point of points2) {
+      testColide = collideBallBrick(pointBall(point, brique2.coord.dx, brique2.coord.dy), brique1)
+      if (testColide.collide) {
+        // on tue la brique qui a la plus grande viteese
+        brique2.coord.dx = testColide.ball.coord.dx
+        brique2.coord.dy = testColide.ball.coord.dy
+        const vitess1 = Math.sqrt(brique1.coord.dx * brique1.coord.dx + brique1.coord.dy * brique1.coord.dy)
+        const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
+        console.log("vitess1 et deux prime", vitess1, vitess2)
+
+        brique1.life = -1
+      }
+    }
+  }
+}
+
   
 const checkBallBriqueCollision = (circle: Ball, rect: Brique) => {
   let testX = circle.coord.x;
@@ -755,21 +611,11 @@ export const step = (state: State) => {
     
     state.pos.forEach((ball) => {
       state.briques.forEach((brique) => {
-        // if (checkBallBriqueCollision(ball, brique)) {
-          console.log("collision detected");
-          // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
-          // handleBallBriqueCollision(ball, brique);
-          // ball.coord = a;
           collideBallBrick(ball, brique);
-          //collideBallRectangle(ball, brique,state.size.height,state.briques);
-        // }
       });
+
       state.pigs.forEach((pig) => {
         if (collide(ball.coord, pig.coord)) {
-          console.log("collision detected");
-          // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
-          // handleBallPigCollision(ball, pig);
-          // ball.coord = a;
           if (!ball.invincible) {
             ball.life--
             ball.invincible = 20
@@ -782,8 +628,8 @@ export const step = (state: State) => {
         }
       });
     });
-   
   })
+
   state.pigs.forEach((pig) => {
     state.briques.forEach((brique) => {
       if (checkBallBriqueCollision(pig, brique)) {
@@ -792,6 +638,7 @@ export const step = (state: State) => {
       }
     });
   });
+
   state.briques.forEach((brique, i, arr) => {
     arr.slice(i + 1).forEach((other) => {
       collideRectangleRectangle(other,brique);//, state.size,state.briques);
@@ -817,6 +664,32 @@ export const step = (state: State) => {
 
   return newState;
 };
+
+const cleanUnconformePosition = (brique: Brique, width: number, height: number) => {
+  // si la brique est en collision avec le sole et que aucune de ces coté n'est par terre
+  const rotationAngle = getRotatedRectanglePoints(brique);
+  if (brique.coord.y + brique.height >= height ) {     // si la brique est en collision avec le sol
+    let contacteSol = false;
+    rotationAngle.forEach((point) => {
+      if (point.y === height) {
+        contacteSol = true;
+      }
+    });
+
+    if (!contacteSol) {
+      // on tue la brique
+      brique.life = 0;
+    }
+    
+  }
+  // s'il ya un point de la brique en rotation est en dehors de la zone de jeu on le tue
+  rotationAngle.forEach((point) => {
+    if (point.x < 0 ||  point.y > height) {
+      brique.life = 0;
+    }
+  });
+  
+} 
 
 function findPath(target: Ball): Array<Coord> {
   var path = new Array<Coord>()
