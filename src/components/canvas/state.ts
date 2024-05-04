@@ -133,7 +133,7 @@ const iterate = (bound: Size) => (ball: Ball, briques: Array<Brique>) => {
       coord: coord
   };
 };
-function getRotatedRectanglePoints(brique: Brique): Point[] {
+export function getRotatedRectanglePoints(brique: Brique): Point[] {
   const points: Point[] = [];
   const angle = brique.alpha * Math.PI / 180; // Conversion de degrés en radians
   const cx = brique.coord.x + brique.width / 2; // Centre x de la brique

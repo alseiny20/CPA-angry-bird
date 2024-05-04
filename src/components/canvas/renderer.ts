@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State, Coord, Brique, Point } from './state';
+import { State, Coord, Point, getRotatedRectanglePoints } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -30,17 +30,13 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   backgroundImage.src = conf.DEFAULT_BACKGROUND_IMAGE;
   console.log('backgroundImage.src', backgroundImage.src);
   backgroundImage.onload = () => ctx.drawImage(backgroundImage, 0, 0, width, height);
-  
-  // const { width, height } = ctx.canvas;
-  // // Clear the canvas with a transparent fill
-  // ctx.clearRect(0, 0, width, height);
 };
+
 const drawCorner = (ctx: CanvasRenderingContext2D, corners: Array<Point>) => {
   // Draw a dot at each corner
   corners.forEach(corner => {
     ctx.beginPath();
     ctx.fillStyle = COLORS.RED;
-    // ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
     ctx.fillRect(corner.x, corner.y, 10, 10);
     ctx.fill();
   });
@@ -90,7 +86,6 @@ const computeColor = (life: number, maxLife: number, baseColor: string) => {
   return rgbaTorgb(baseColor, (maxLife - life) * (1 / maxLife));
 };
 
-
 const drawBrique = (
   ctx: CanvasRenderingContext2D,
   { x, y }: { x: number; y: number },
@@ -136,7 +131,6 @@ const drawBrique = (
   ctx.restore(); // Restore the original state
 };
 
-
 const drawShoot = (
   ctx: CanvasRenderingContext2D,
   shoot: Array<{ x: number; y: number }>
@@ -148,6 +142,7 @@ const drawShoot = (
     ctx.fill();
   });
 }
+
 const drawEndGameScreen = (ctx : CanvasRenderingContext2D, image:string, msg:string) => {
   const { height, width } = ctx.canvas;
 
@@ -196,12 +191,9 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   });
 
   // Dessiner les briques
-  // state.briques.forEach(brique => {
-  //   drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.image);
-  // });
   state.briques.forEach(brique => {
-    // drawCorner(ctx, brique.corner)
     drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.RED), brique.color || COLORS.RED, brique.alpha, brique.image);
+    drawCorner(ctx, getRotatedRectanglePoints(brique));
   });
   // Dessiner les balles de réserve
   state.reserves.forEach(reserve => {
@@ -213,7 +205,6 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     drawCircle(ctx, pig.coord, computeColor(pig.life, conf.PIGLIFE, pig.color || COLORS.GREEN), pig.color || COLORS.RED, pig.image, pig.alpha, pig.radius);
   });
   
-
     const target = state.pos.find((p) => p.target)
     const positionBall = target ? target.coord : { x: conf.COORD_TARGET.x, y: conf.COORD_TARGET.y, dx: 0, dy: 0 };
     var space_ball = 15;
@@ -223,13 +214,11 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     if ( (Math.abs(positionBall.x - conf.COORD_TARGET.x)< 30 && Math.abs(positionBall.y - conf.COORD_TARGET.y) < 30
     && target?.selectect === false )|| initPos) {
       initPos = true;
-      console.log("******************************");
       positionTire.x = conf.COORD_TARGET.x;
       positionTire.y = conf.COORD_TARGET.y;
       space_ball = 0;
       }
     if (target?.resting === true && target.selectect === true ) {
-      console.log("**>>>>>>>");
 
       initPos = false;
     }
@@ -259,7 +248,6 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
       var msg = "Game Over";
       var image = conf.IMAGE_MINIONPIG;
     }
-
     drawEndGameScreen(ctx, image, msg);
   }
 };

@@ -7,8 +7,6 @@ export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
 
 // Chargez le fichier JSON
-// const filePath = './data.json';
-// const jsonFile = fs.readFileSync(filePath);
 const jsonFileString = JSON.stringify(json);
 const config = JSON.parse(jsonFileString);
 
@@ -75,7 +73,6 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     position = position + 60;
     return position;
   }
-  
 
   let reserveBall = new Array(conf.ball_none_numbers).fill(null).map((coord) => ({
     life: conf.BALLLIFE,
@@ -112,33 +109,6 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
 
   let { pigs, briques }  = createEntities(2);
 
-  let myArrayBriques = new Array(conf.brique_numbers).fill(null).map((_) => ({
-    life : conf.BRIQUELIFE,
-    weight : 50,
-    coord: {
-      x: 500,//randomInt(width),
-      y: 500,//randomInt(height),
-      dx: 0,
-      dy: 0
-    },
-    width: 100,
-    height: 100,//randomInt(100),
-    color: '#000000', // Couleur bleue pour les briques
-  })).concat(new Array(conf.brique_numbers).fill(null).map((_) => ({
-  
-      life : conf.BRIQUELIFE,
-      weight : 50,
-      coord: {
-        x: 500,//randomInt(width),
-        y: 300,//randomInt(height),
-        dx: 0,
-        dy: 0
-      },
-      width: 100,
-      height: 100,//randomInt(100),
-      color: '#0000ff', // Couleur bleue pour les briques
-    })));
-
   const initialState: State = {
     pos: balls,
     pigs: pigs,
@@ -156,7 +126,6 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
   const iterate = (ctx: CanvasRenderingContext2D) => {
     state.current = step(state.current)
     console.log(state.current.endOfGame)
-    // state.current.endOfGame = !endOfGame(state.current)
     render(ctx)(state.current)
     if (!state.current.endOfGame) requestAnimationFrame(() => iterate(ctx))
       console.log(state.current.endOfGame)
