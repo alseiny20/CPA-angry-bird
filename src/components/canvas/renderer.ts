@@ -178,7 +178,7 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
   // Dessiner la lance
   const slingshot = new Image();
-  slingshot.src = 'https://www.clipartmax.com/png/full/110-1101727_sling-shot-image-angry-birds-slingshot-clipart.png';
+  slingshot.src = conf.IMAGE_SLINGSHOT;
   slingshot.onload = () => {
   const x = conf.COORD_TARGET.x - 50
   const y = conf.COORD_TARGET.y

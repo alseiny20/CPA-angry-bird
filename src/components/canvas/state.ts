@@ -230,13 +230,14 @@ coord.y = gravityCenterY - brique.height / 2;
   // Update alpha based on the decay rate
   // on applique la friction de l'air
   if (brique.dr > 0) {
-    brique.dr -= 0.001
+    brique.dr -= conf.ROTATIONFRICTION;
   }else if (brique.dr < 0) {
-    brique.dr += 0.001
+    brique.dr += conf.ROTATIONFRICTION;
   }
+  // on applique un modulo pour maintenir l'angle entre 0 et 180 
   brique.alpha = brique.alpha % 180
   // valeur absolue de dr 
-  if (Math.abs(brique.dr) > 0.001) {
+  if (Math.abs(brique.dr) > conf.ROTATIONFRICTION) {
     brique.alpha += brique.dr
   }
   // on clean les brique hors du cadre
@@ -339,7 +340,6 @@ const collide = (o1: Coord, o2: Coord) =>
     ball2.y += correctionFactor * ny;
 }
 
-
 export const collideBallBrick = (ball: Ball, brick: Brique): {collide: boolean, ball: Ball} => {
   // Convert brick angle from degrees to radians for transformations
   const angle = -brick.alpha * Math.PI / 180;
@@ -413,8 +413,6 @@ export const collideBallBrick = (ball: Ball, brick: Brique): {collide: boolean, 
   }
   return {collide : false, ball: ball};
 };
-
-
  
 function arePolygonsColliding(points: Point[], brique: Brique): boolean {
   // Implémenter SAT pour vérifier la collision un point et un polygone
@@ -684,7 +682,7 @@ const cleanUnconformePosition = (brique: Brique, width: number, height: number) 
   }
   // s'il ya un point de la brique en rotation est en dehors de la zone de jeu on le tue
   rotationAngle.forEach((point) => {
-    if (point.x < 0 ||  point.y > height) {
+    if (point.x < 0 ||  point.y > height || point.x > width ) {
       brique.life = 0;
     }
   });
@@ -705,8 +703,6 @@ const hasMoved = (obj: Ball | Brique) => obj.coord.dx !== 0 || obj.coord.dy !== 
 
 const check_endTurn = (state: State) => {
   const ballsMoved = state.pos.some(hasMoved);
-  // const briquesMoved = state.briques.some(hasMoved);
-  
   return !ballsMoved /* && !briquesMoved */ && state.target === null;
 };
 
