@@ -39,35 +39,35 @@
         "bricks": [
           {
             "life": 2,
-            "weight": 50,
+            "weight": 3,
             "coord": {
-              "x": 800,
+              "x": 830,
               "y": 800,
               "dx": 0,
               "dy": 0
             },
-            "width": 100,
+            "width": 60,
             "height": 50,
             "color": "#ff0000",
             "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
-              "x": 600,
+              "x": 630,
               "y": 800,
               "dx": 0,
               "dy": 0
             },
-            "width": 100,
+            "width": 60,
             "height": 50,
             "color": "#ff0000",
             "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 650,
               "y": 400,
@@ -81,7 +81,7 @@
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 850,
               "y":300,
@@ -96,7 +96,7 @@
           ,
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 1150,
               "y":400,
@@ -110,7 +110,7 @@
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 1250,
               "y":130,
@@ -124,7 +124,7 @@
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 1450,
               "y":900,
@@ -138,14 +138,14 @@
           },
           {
             "life": 20,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 600,
               "y":100,
               "dx": 0,
               "dy": 0
             },
-            "width": 400,
+            "width": 340,
             "height": 50,
             "color": "#ff0000",
             "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
@@ -175,7 +175,7 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 650,
               "y": 600,
@@ -188,7 +188,7 @@
           },
           {
             "life": 200,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 950,
               "y": 650,
@@ -202,7 +202,7 @@
           ,
           {
             "life": 200,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 850,
               "y": 250,
@@ -239,7 +239,7 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 50,
+            "weight": 3,
             "coord": {
               "x": 650,
               "y": 300,

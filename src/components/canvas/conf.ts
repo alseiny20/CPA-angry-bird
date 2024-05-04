@@ -42,7 +42,7 @@ export const AIR_FRICTION_ASCENDING = 0.995; // Friction de l'air ajustable vu q
 export const AIR_FRICTION_HORIZONTAL = 0.998; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
 export const SQUARE_RESTITUTION= 0.99; // Friction sur les squares ajustable vu qu'on a pas la velocity de l'objet
 
-export const GRAVITY = 0.3; // Ajustable vu qu'on a pas la notion de poid
+export const GRAVITY = 0.1; // Ajustable vu qu'on a pas la notion de poid
 export const DAMPING = 0.75; // Coefficient du perte d'energy lors d'une collision avec bord ou sol
 
 export const VELOCITY_THRESHOLD = 0.4; // Coefficient du
@@ -51,7 +51,7 @@ export const VELOCITY_THRESHOLD = 0.4; // Coefficient du
 export const MU_K = 0.01; // Ajustable vu qu'on a pas definie c'est quell type de matiere le sol
 
 // Coefficient de restitution pour les collisions
-export const COEFFICIENT_OF_RESTITUTION = 0.7; // Ajustable vu qu'on a pas la notion de poid
+export const COEFFICIENT_OF_RESTITUTION = 0.5; // Ajustable vu qu'on a pas la notion de poid
 
 // Mise à jour de GROUND_FRICTION pour utiliser MU_K
 export const GROUND_FRICTION = 1 - MU_K; // Calcule la friction au sol à partir de MU_K

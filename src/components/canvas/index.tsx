@@ -2,7 +2,6 @@ import * as conf from './conf'
 import { useRef, useEffect } from 'react'
 import { State, step, click, mouseMove, endOfGame, mousedown, mouseup,Pig, Brique} from './state'
 import { render } from './renderer'
-// import * as fs from 'fs';
 import * as json from '../../data.json';
 export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
@@ -111,24 +110,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     radius : conf.RADIUS
   }));
 
-  let { pigs, briques }  = createEntities(1);
-  // const pigs = new Array(conf.pig_numbers).fill(null).map((_) => ({
-  //   life: conf.PIGLIFE,
-  //   resting: true,
-  //   target: true,
-  //   weight: 1.2,
-  //   coord: {
-  //     x: 400,
-  //     y: 700,
-  //     dx: 0,
-  //     dy: 0
-  //   },
-  //   radius: conf.RADIUS,
-  //   alpha: 1,
-  //   color: '#ff0000',
-  //   image: conf.IMAGE_KINGPIG
-
-  // }));
+  let { pigs, briques }  = createEntities(2);
 
   let myArrayBriques = new Array(conf.brique_numbers).fill(null).map((_) => ({
     life : conf.BRIQUELIFE,

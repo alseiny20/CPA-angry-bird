@@ -91,31 +91,6 @@ const computeColor = (life: number, maxLife: number, baseColor: string) => {
 };
 
 
-// const drawBrique = (
-//   ctx: CanvasRenderingContext2D,
-//     brick: Brique,
-//     coord: Coord,
-//     width: number,
-//     height: number,
-//     color: string,
-//     initColor: string,
-//     imageLink?: string // Path to the brick image
-// ) => {
-//   ctx.save(); // Save the current drawing state
-//   ctx.fillStyle = color;
-
-//   // Translate to the center of the brick
-//   ctx.translate(brick.coord.x + brick.width / 2, brick.coord.y + brick.height / 2);
-
-//   // Rotate the context based on brick's rotation angle
-//   ctx.rotate(brick.rotationAngle);
-
-//   // Draw the rotated rectangle
-//   ctx.fillRect(-brick.width / 2, -brick.height / 2, brick.width, brick.height);
-
-//   ctx.restore(); // Restore the previous drawing state
-// };
-
 const drawBrique = (
   ctx: CanvasRenderingContext2D,
   { x, y }: { x: number; y: number },
@@ -129,11 +104,11 @@ const drawBrique = (
   
   ctx.save(); // Save the current context state$
   
-  ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
-  const angle = -alpha * (Math.PI / 180);
-  ctx.rotate(angle); // Rotate the context by alpha
   if (initColor !== COLORS.RED) {
   
+    ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
+    const angle = alpha * (Math.PI / 180);
+    ctx.rotate(angle); // Rotate the context by alpha
     // Draw the rectangle centered around the origin with rotation
     ctx.beginPath();
     ctx.fillStyle = color;
@@ -145,7 +120,17 @@ const drawBrique = (
 
     // Ensure image is loaded before drawing
     backgroundImage.onload = () => {
-      ctx.drawImage(backgroundImage, x,y, width, height); // Draw the image centered around the origin
+      
+      ctx.save(); // Save the current context state
+      ctx.beginPath();
+
+      ctx.translate(x,y);
+      // if(alpha !== 0){
+        const angle = alpha * (Math.PI / 180);
+        ctx.rotate(angle); // Rotate the context by alpha
+      // }
+      ctx.drawImage(backgroundImage, 0,0, width, height); // Draw the image centered around the origin
+      ctx.restore(); 
     };
   }
   ctx.restore(); // Restore the original state
