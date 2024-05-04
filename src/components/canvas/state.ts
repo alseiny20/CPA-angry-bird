@@ -460,7 +460,7 @@ function pointBall(point: Point, dx: number, dy: number): Ball {
     },
     life: 10,
     weight: 1.2,
-    radius: 30,
+    radius: 50,
     resting: false,
     invincible: 0
 
@@ -517,7 +517,7 @@ function handleCollisionResponse(brique1: Brique, brique2: Brique) {
       const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
       console.log("vitess1 et deux", vitess1, vitess2)
 
-      brique2.life = -1
+      // brique2.life = -1
     }
   }
 
@@ -532,7 +532,7 @@ function handleCollisionResponse(brique1: Brique, brique2: Brique) {
         const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
         console.log("vitess1 et deux prime", vitess1, vitess2)
 
-        brique1.life = -1
+        // brique1.life = -1
       }
     }
   }
@@ -604,10 +604,6 @@ export const step = (state: State) => {
     
     state.pos.forEach((ball) => {
       state.briques.forEach((brique) => {
-        // if (checkBallBriqueCollision(ball, brique)) {
-          // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
-          // handleBallBriqueCollision(ball, brique);
-          // ball.coord = a;
           collideBallBrick(ball, brique);
       });
 
@@ -668,7 +664,7 @@ const cleanUnconformePosition = (brique: Brique, width: number, height: number) 
   if (brique.coord.y + brique.height >= height ) {     // si la brique est en collision avec le sol
     let contacteSol = false;
     rotationAngle.forEach((point) => {
-      if (point.y === height) {
+      if (point.y >= height - 5) {
         contacteSol = true;
       }
     });
@@ -774,10 +770,8 @@ export const mousedown =
         return { ...state, pos: state.pos, shoot: path };
     }
 
-
     return state;
 };
-
 
 export const mouseup = (state: State) => (event: PointerEvent): State => {
   const { offsetX, offsetY } = event;
