@@ -1,257 +1,407 @@
 {
-    "levels": [
-      {
-        "id": 1,
-        "pigs": [
-          {
-            "life": 1,
-            "resting": true,
-            "target": true,
-            "weight": 1.2,
-            "coord": {
-              "x": 740,
-              "y": 900,
-              "dx": 0,
-              "dy": 0
-            },
-            "radius": 30,
-            "alpha": 1,
-            "color": "#ff0000",
-            "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
+  "levels": [
+    {
+      "id": 1,
+      "pigs": [
+        {
+          "life": 2,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 740,
+            "y": 900,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 2,
-            "resting": true,
-            "target": true,
-            "weight": 1.2,
-            "coord": {
-              "x": 500,
-              "y": 900,
-              "dx": 0,
-              "dy": 0
-            },
-            "radius": 30,
-            "alpha": 1,
-            "color": "#ff0000",
-            "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
-          }
-        ],
-        "bricks": [
-          {
-            "life": 2,
-            "weight": 3,
-            "coord": {
-              "x": 830,
-              "y": 800,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 60,
-            "height": 50,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "radius": 30,
+          "alpha": 1,
+          "color": "#ff0000",
+          "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
+        },
+        {
+          "life": 2,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 500,
+            "y": 900,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 630,
-              "y": 800,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 60,
-            "height": 50,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "radius": 30,
+          "alpha": 1,
+          "color": "#ff0000",
+          "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
+        }
+      ],
+      "bricks": [
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 800,
+            "y": 800,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 650,
-              "y": 400,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 20,
-            "height": 150,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "width": 100,
+          "height": 50,
+          "color": "#0000ff",
+          "image": "../brick.png",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 600,
+            "y": 800,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 850,
-              "y":300,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 20,
-            "height": 150,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
-          }
-          ,
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 1150,
-              "y":400,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 20,
-            "height": 150,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "width": 100,
+          "height": 50,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 650,
+            "y": 400,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 1250,
-              "y":130,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 250,
-            "height": 150,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "width": 20,
+          "height": 150,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 850,
+            "y":300,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 1450,
-              "y":900,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 40,
-            "height": 150,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
+          "width": 20,
+          "height": 150,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        }
+        ,
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 1150,
+            "y":400,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 20,
-            "weight": 3,
-            "coord": {
-              "x": 600,
-              "y":100,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 340,
-            "height": 50,
-            "color": "#ff0000",
-            "image": "https://static.vecteezy.com/system/resources/previews/005/073/986/original/brown-wood-grain-seamless-background-free-vector.jpg"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "pigs": [
-          {
-            "life": 100,
-            "resting": true,
-            "target": true,
-            "weight": 1.2,
-            "coord": {
-              "x": 50,
-              "y": 700,
-              "dx": 0,
-              "dy": 0
-            },
-            "radius": 30,
-            "alpha": 1,
-            "color": "#ff0000",
-            "image": "king_pig_image.png"
-          }
-        ],
-        "bricks": [
-          {
-            "life": 200,
-            "weight": 3,
-            "coord": {
-              "x": 650,
-              "y": 600,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 40,
-            "height": 150,
-            "color": "#ff0000"
+          "width": 20,
+          "height": 150,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 1250,
+            "y":130,
+            "dx": 0,
+            "dy": 0
           },
-          {
-            "life": 200,
-            "weight": 3,
-            "coord": {
-              "x": 950,
-              "y": 650,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 40,
-            "height": 150,
-            "color": "#ff0000"
-          }
-          ,
-          {
-            "life": 200,
-            "weight": 3,
-            "coord": {
-              "x": 850,
-              "y": 250,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 400,
-            "height": 70,
-            "color": "#ff0000"
-          }
-        ]
-      },
-      
-      {
-        "id": 3,
-        "pigs": [
-          {
-            "life": 100,
-            "resting": true,
-            "target": true,
-            "weight": 1.2,
-            "coord": {
-              "x": 50,
-              "y": 700,
-              "dx": 0,
-              "dy": 0
-            },
-            "radius": 30,
-            "alpha": 1,
-            "color": "#ff0000",
-            "image": "king_pig_image.png"
-          }
-        ],
-        "bricks": [
-          {
-            "life": 200,
-            "weight": 3,
-            "coord": {
-              "x": 650,
-              "y": 300,
-              "dx": 0,
-              "dy": 0
-            },
-            "width": 40,
-            "height": 150,
-            "color": "#ff0000"
-          }
-        ]
-      }
-    ]
-  }
-  
+          "width": 250,
+          "height": 150,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 1450,
+            "y":900,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 40,
+          "height": 150,
+          "color": "#0000ff",
+          "image": "./brick.png",
+          "alpha": 0,
+          "dr": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "pigs": [
+        {
+          "life": 100,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 700,
+            "y": 700,
+            "dx": 0,
+            "dy": 0
+          },
+          "radius": 30,
+          "alpha": 1,
+          "color": "#ff0000",
+          "image": "king_pig_image.png"
+        }
+      ],
+      "bricks": [
+        {
+          "life": 200,
+          "weight": 50,
+          "coord": {
+            "x": 650,
+            "y": 650,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 150,
+          "height": 50,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 50,
+          "coord": {
+            "x": 750,
+            "y": 650,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 400,
+          "height": 50,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        }
+      ]
+    },
+
+    {
+      "id": 3,
+      "pigs": [
+        {
+          "life": 100,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 200,
+            "y": 700,
+            "dx": 0,
+            "dy": 0
+          },
+          "radius": 30,
+          "alpha": 0,
+          "color": "#ff0000",
+          "image": "king_pig_image.png"
+        }
+      ],
+      "bricks": [
+        {
+          "life": 200,
+          "weight": 20,
+          "coord": {
+            "x": 650,
+            "y": 500,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 200,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 20,
+          "coord": {
+            "x": 630,
+            "y": 0,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 200,
+          "height": 50,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 20,
+          "coord": {
+            "x": 550,
+            "y": 200,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 300,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 20,
+          "coord": {
+            "x": 550,
+            "y": 500,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 100,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        }
+      ]
+    },
+
+    {
+      "id": 4,
+      "pigs": [
+        {
+          "life": 100,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 200,
+            "y": 700,
+            "dx": 0,
+            "dy": 0
+          },
+          "radius": 30,
+          "alpha": 0,
+          "color": "#ff0000",
+          "image": "king_pig_image.png"
+        }
+      ],
+      "bricks": [
+        {
+          "life": 3,
+          "weight": 3,
+          "coord": {
+            "x": 650,
+            "y": 505,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 200,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 3,
+          "weight": 3,
+          "coord": {
+            "x": 650  ,
+            "y": 50,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 200,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 3,
+          "weight": 3,
+          "coord": {
+            "x": 500,
+            "y": 505,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 200,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 3,
+          "weight": 3,
+          "coord": {
+            "x": 500  ,
+            "y": 50,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 50,
+          "height": 200,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 500  ,
+            "y": 5,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 200,
+          "height": 50,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        },
+        {
+          "life": 200,
+          "weight": 3,
+          "coord": {
+            "x": 500  ,
+            "y": 400,
+            "dx": 0,
+            "dy": 0
+          },
+          "width": 200,
+          "height": 50,
+          "color": "#0000ff",
+          "alpha": 0,
+          "dr": 0
+        }
+      ]
+    }
+  ]
+}
