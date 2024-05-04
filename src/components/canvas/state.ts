@@ -689,69 +689,6 @@ function handleCollisionResponse(brique1: Brique, brique2: Brique) {
   brique2.dr *= -0.5;
 } 
   
-  // export const collideRectangleRectangle = (brique1: Brique, brique2: Brique, boundaries: Size, otherBriques: Array<Brique>) => {
-  //   // // Check for and handle collision
-  //   if (areRectanglesColliding(brique1, brique2)) {
-  //       // Simplified response: Adjust positions and velocities
-  //       let overlapX = calculateOverlap(brique1.coord.x, brique1.width, brique2.coord.x, brique2.width);
-  //       let overlapY = calculateOverlap(brique1.coord.y, brique1.height, brique2.coord.y, brique2.height);
-  
-  //       // Resolve the smaller overlap
-  //       if (overlapX < overlapY) {
-  //         brique1.coord.dx = -brique1.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
-  //         brique2.coord.dx = -brique2.coord.dx * conf.COEFFICIENT_OF_RESTITUTION;
-  //           adjustPositionsX(brique1, brique2, overlapX);
-  //       } else {
-  //         brique1.coord.dy = -brique1.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
-  //         brique2.coord.dy = -brique2.coord.dy * conf.COEFFICIENT_OF_RESTITUTION;
-  //           adjustPositionsY(brique1, brique2, overlapY);
-  //       }
-  //   }
-  
-  //   // // Apply ground friction and check resting conditions
-  //   // applyGroundFrictionAndResting(brique1, boundaries.height);
-  //   // applyGroundFrictionAndResting(brique2, boundaries.height);
-  
-  //   // // // Check for stacking
-  //   // brique1.resting = checkStacking(brique1, otherBriques) || brique1.resting;
-  //   // brique2.resting = checkStacking(brique2, otherBriques) || brique2.resting;
-
-  // }
-  
-
-
-  
-  
-  function calculateOverlap(pos1: number, size1: number, pos2: number, size2: number): number {
-    if (pos1 < pos2) {
-        return (pos1 + size1) - pos2;
-    } else {
-        return (pos2 + size2) - pos1;
-    }
-  }
-  
-  function adjustPositionsX(brique1: Brique, brique2: Brique, overlap: number): void {
-    // Adjust positions to resolve collision along x-axis
-    brique1.coord.x -= overlap / 2;
-    brique2.coord.x += overlap / 2;
-  }
-  
-  function adjustPositionsY(brique1: Brique, brique2: Brique, overlap: number): void {
-    // Adjust positions to resolve collision along y-axis
-    brique1.coord.y -= overlap / 2;
-    brique2.coord.y += overlap / 2;
-  }
-  
-  /**
-  * Simple axis-aligned rectangle collision check.
-  */
-  function areRectanglesColliding(brique1: Brique, brique2: Brique): boolean {
-    return brique1.coord.x < brique2.coord.x + brique2.width &&
-        brique1.coord.x + brique1.width > brique2.coord.x &&
-        brique1.coord.y < brique2.coord.y + brique2.height &&
-        brique1.coord.y + brique1.height > brique2.coord.y;
-  }
-
 const checkBallBriqueCollision = (circle: Ball, rect: Brique) => {
   let testX = circle.coord.x;
   let testY = circle.coord.y;
@@ -850,15 +787,8 @@ export const step = (state: State) => {
   state.pigs.forEach((pig) => {
     state.briques.forEach((brique) => {
       if (checkBallBriqueCollision(pig, brique)) {
-      //   console.log("collision detected");
-      //   // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
-      //   handleBallBriqueCollision(ball, brique);
-      //   // ball.coord = a;
-      // }
         pig.life--;
         collideBallBrick(pig, brique);
-
-      // collideBallRectangle(ball,brique,state.size.height,state.briques);
       }
     });
   });
@@ -866,8 +796,8 @@ export const step = (state: State) => {
     arr.slice(i + 1).forEach((other) => {
       collideRectangleRectangle(other,brique);//, state.size,state.briques);
     });
-    // brique.coord.dx += conf.GRAVITY;
   });
+
   inTurn = !check_endTurn(state)
 
   var balls = state.pos.map(ball => iterate(state.size)(ball, state.briques)).filter((p) => p.life > 0);
@@ -906,13 +836,6 @@ const check_endTurn = (state: State) => {
   
   return !ballsMoved /* && !briquesMoved */ && state.target === null;
 };
-
-// const check_endGame = (state: State) => {
-//   if ((state.pos.length === 0 && state.briques.length === 0) && (state.reserves.length === 0 && state.target === null)) {
-//     return true
-//   }
-//   return false
-// }
 
 export const click =
   (state: State) =>
