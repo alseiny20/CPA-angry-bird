@@ -39,7 +39,7 @@
         "bricks": [
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 800,
               "y": 800,
@@ -55,7 +55,7 @@
           },
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 600,
               "y": 800,
@@ -71,7 +71,7 @@
           },
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 650,
               "y": 400,
@@ -87,7 +87,7 @@
           },
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 850,
               "y":300,
@@ -104,7 +104,7 @@
           ,
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 1150,
               "y":400,
@@ -120,7 +120,7 @@
           },
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 1250,
               "y":130,
@@ -136,7 +136,7 @@
           },
           {
             "life": 200,
-            "weight": 200,
+            "weight": 3,
             "coord": {
               "x": 1450,
               "y":900,
@@ -316,12 +316,12 @@
             "weight": 3,
             "coord": {
               "x": 650,
-              "y": 500,
+              "y": 300,
               "dx": 0,
               "dy": 0
             },
             "width": 50,
-            "height": 200,
+            "height": 400,
             "color": "#0000ff",
             "alpha": 0,
             "dr": 0
@@ -331,13 +331,13 @@
             "life": 200,
             "weight": 3,
             "coord": {
-              "x": 530,
-              "y": 500,
+              "x": 900,
+              "y": 400,
               "dx": 0,
               "dy": 0
             },
             "width": 50,
-            "height": 200,
+            "height": 300,
             "color": "#0000ff",
             "alpha": 0,
             "dr": 0

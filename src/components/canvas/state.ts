@@ -145,7 +145,7 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
   // const rotationAngle = unbalanceTorque / brique.weight; // Angle of rotation due to unbalance
 
   // Apply gravity to the gravity center
-  // coord.dy += conf.GRAVITY 
+  coord.dy += conf.GRAVITY * brique.weight;
 
   // Apply air resistance based on direction to the gravity center
   const airFriction = coord.dy > 0 ? conf.AIR_FRICTION_DESCENDING : conf.AIR_FRICTION_ASCENDING;
@@ -549,7 +549,7 @@ export const collideBallBrick = (ball: Ball, brick: Brique) => {
             const torque = leverArmX * ny - leverArmY * nx; // Torque calculation: cross product of lever arm and normal
 
             // Adjust rotational velocity based on the direction of the torque
-            brick.dr = torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
+            brick.dr -= torque / (brick.weight * Math.sqrt(leverArmX * leverArmX + leverArmY * leverArmY));
       }
   } else {
       ball.invincible = 0; // Reset invincibility when not colliding
@@ -578,7 +578,7 @@ function applyGroundFrictionAndResting(obj: any, groundY: number) {
 
 
 
-function getRotatedRectanglePoints(brique: Brique): Point[] {
+export function getRotatedRectanglePoints(brique: Brique): Point[] {
   const points: Point[] = [];
   const angle = brique.alpha * Math.PI / 180; // Conversion de degrés en radians
   const cx = brique.coord.x + brique.width / 2; // Centre x de la brique
@@ -602,29 +602,59 @@ function getRotatedRectanglePoints(brique: Brique): Point[] {
   return points;
 }
 
-function arePolygonsColliding(points1: Point[], points2: Point[]): boolean {
-  // Implémenter SAT pour vérifier la collision entre deux polygones
-  const axes = getAxes(points1).concat(getAxes(points2));
+function arePolygonsColliding(points: Point[], brique: Brique): boolean {
+  // Implémenter SAT pour vérifier la collision un point et un polygone
+  const axes = getAxes(points)
+  const briquePoints = getRotatedRectanglePoints(brique);
+  const briqueAxes = getAxes(briquePoints);
+  
+  for (let i = 0; i < axes.length; i++) {
+      const axis = axes[i];
+      const projection1 = projectPolygon(axis, points);
+      const projection2 = projectPolygon(axis, briquePoints);
 
-  for (let axis of axes) {
-      if (!isOverlapping(projectPolygon(axis, points1), projectPolygon(axis, points2))) {
-          return false; // Aucune collision si un axe séparateur est trouvé
+      if (!isOverlapping(projection1, projection2)) {
+          return false;
       }
   }
-  return true; // Collision détectée
-}
 
-export const  collideRectangleRectangle= (brique1: Brique, brique2: Brique) => {
+  for (let i = 0; i < briqueAxes.length; i++) {
+      const axis = briqueAxes[i];
+      const projection1 = projectPolygon(axis, points);
+      const projection2 = projectPolygon(axis, briquePoints);
+
+      if (!isOverlapping(projection1, projection2)) {
+          return false;
+      }
+  }
+
+  return true;
+}
+export const collideRectangleRectangle= (brique1: Brique, brique2: Brique) => {
   const points1 = getRotatedRectanglePoints(brique1);
   console.log("points---1", points1);
+
   const points2 = getRotatedRectanglePoints(brique2);
   console.log("points---2", points2);
 
-  if (arePolygonsColliding(points1, points2)) {
-      console.log("Collision détectée avec les briques");
-      handleCollisionResponse(brique1, brique2); // Gérer la réponse à la collision ici
+  if (arePolygonsColliding(points1, brique2)) {
+      handleCollisionResponse(brique1, brique2);
   }
 };
+
+function pointBall(point: Point ): Ball {
+  return {
+    coord: {
+      x: point.x,
+      y: point.y,
+      dx: 0,
+      dy: 0
+    },
+    life: 1,
+    weight: 1.2,
+    radius: 10
+  };
+}
 
 function getAxes(points: Point[]): Point[] {
   const axes = [];
@@ -661,26 +691,18 @@ function isOverlapping(projection1: { min: number; max: number }, projection2: {
 function handleCollisionResponse(brique1: Brique, brique2: Brique) {
   // Réponse simplifiée : ajuster les positions et vitesses pour "résoudre" la collision
   // Cela peut être raffiné selon les besoins spécifiques du jeu
-  brique1.coord.dx *= -0.5;
-  brique2.coord.dx *= -0.5;
-  brique1.coord.dy *= -0.5;
-  brique2.coord.dy *= -0.5;
+  const dxMean = (brique1.coord.dx + brique2.coord.dx) / 2;
+  const dyMean = (brique1.coord.dy + brique2.coord.dy) / 2;
+
+  brique1.coord.dx = dxMean;
+  brique2.coord.dx = dxMean;
+  brique1.coord.dy = dyMean;
+  brique2.coord.dy = dyMean;
+
+
+  brique1.dr *= -0.5;
+  brique2.dr *= -0.5;
 }
-
-// export const collideRectangleRectangle = (brique1: Brique, brique2: Brique) => {
-//   const points1 = getRotatedRectanglePoints(brique1);
-//   const points2 = getRotatedRectanglePoints(brique2);
-
-//   if (arePolygonsColliding(points1, points2)) {
-//       handleCollisionResponse(brique1, brique2);
-//   }
-// };
-
-
-
-
-
-
 
 
 

@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State, Coord } from './state';
+import { State, Coord, Point, getRotatedRectanglePoints } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -92,7 +92,7 @@ const drawBrique = (
 ) => {
   ctx.save(); // Save the current context state
   ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
-  const angle = -alpha * (Math.PI / 180);
+  const angle = alpha * (Math.PI / 180);
   ctx.rotate(angle); // Rotate the context by alpha
 
   if (initColor !== COLORS.RED) {
@@ -127,6 +127,16 @@ const drawShoot = (
   });
 }
 
+const drawCorner = (ctx: CanvasRenderingContext2D, corners: Array<Point>) => {
+  // Draw a dot at each corner
+  corners.forEach(corner => {
+    ctx.beginPath();
+    ctx.fillStyle = COLORS.RED;
+    // ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
+    ctx.fillRect(corner.x, corner.y, 10, 10);
+    ctx.fill();
+  });
+};
 
 var initPos = false;
 export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
@@ -149,6 +159,8 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   // Dessiner les briques
   state.briques.forEach(brique => {
     drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.BLUE), brique.color || COLORS.GREEN, brique.alpha, brique.image);
+    const corners = getRotatedRectanglePoints(brique);
+    drawCorner(ctx, corners);
   });
 
   // Dessiner les balles de réserve
@@ -160,6 +172,8 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   state.pigs.forEach(pig => {
     drawCircle(ctx, pig.coord, computeColor(pig.life, conf.PIGLIFE, pig.color || COLORS.GREEN), pig.color || COLORS.RED, pig.image, pig.alpha, pig.radius);
   });
+
+  
   
 
     const target = state.pos.find((p) => p.target)

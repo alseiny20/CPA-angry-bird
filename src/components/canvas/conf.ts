@@ -36,7 +36,7 @@ export const AIR_FRICTION_ASCENDING = 0.995; // Friction de l'air ajustable vu q
 export const AIR_FRICTION_HORIZONTAL = 0.998; // Friction de l'air ajustable vu qu'on a pas la forme de l'objet
 export const SQUARE_RESTITUTION= 0.99; // Friction sur les squares ajustable vu qu'on a pas la velocity de l'objet
 
-export const GRAVITY = 0.3; // Ajustable vu qu'on a pas la notion de poid
+export const GRAVITY = 0.01; // Ajustable vu qu'on a pas la notion de poid
 export const DAMPING = 0.75; // Coefficient du perte d'energy lors d'une collision avec bord ou sol
 
 export const VELOCITY_THRESHOLD = 0.5; // Coefficient du
