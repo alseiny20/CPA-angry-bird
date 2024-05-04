@@ -42,13 +42,8 @@ export type Brique = {
   invincible?: number;
   color?: string;
   image?: string;
-  rotationAngle: number; // Add rotation angle parameter
-  angularVelocity: number; // Add angular velocity parameter
-  momentOfInertia: number;
-  center : Coord;
   alpha : number;
   dr : number;
-  corner : Array<Point>;
 };
 
 type Size = { height: number; width: number }
@@ -62,6 +57,7 @@ export type State = {
   shoot: Array<Coord> | null
   size: Size
   endOfGame: boolean
+  win: boolean
 }
 var inTurn = true;
 
@@ -586,8 +582,7 @@ export const step = (state: State) => {
     // console.log("taillle des pigs " + state.pigs.length + " end of game" + state.endOfGame)
     // console.log(state.pigs.length<=0)
     if (state.pos.length <= 0  && state.reserves.length <= 0 && state.target == null || state.pigs.length <= 0){
-      console.log("je modifie le end of game")
-      return {...state, endOfGame: true};
+      return {...state, endOfGame: true, win: state.pigs.length <= 0};
     }
     state = choose_new_target(state);
   }
@@ -609,6 +604,10 @@ export const step = (state: State) => {
     
     state.pos.forEach((ball) => {
       state.briques.forEach((brique) => {
+        // if (checkBallBriqueCollision(ball, brique)) {
+          // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
+          // handleBallBriqueCollision(ball, brique);
+          // ball.coord = a;
           collideBallBrick(ball, brique);
       });
 
@@ -739,7 +738,6 @@ export const mousedown =
     if (target) {
       target.selectect = true
       target.initDrag = { x: offsetX, y: offsetY, dx: 0, dy: 0 }
-      console.log("selectect", target.coord)
     }
     return state
   }
@@ -752,7 +750,6 @@ export const mousedown =
         const dx = offsetX - target.initDrag.x;
         const dy = offsetY - target.initDrag.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        console.log('distance', distance);
 
         if (distance < conf.MAX_DISTANCE) {
             target.coord.x = offsetX;
@@ -774,7 +771,6 @@ export const mousedown =
              coord: {
              x: target.coord.x, y: target.coord.y, dx: 
              (target.initDrag.x - target.coord.x) / 10, dy: (target.initDrag.y - target.coord.y) / 10 }});
-        console.log('babal',path);
         return { ...state, pos: state.pos, shoot: path };
     }
 
@@ -785,7 +781,6 @@ export const mousedown =
 
 export const mouseup = (state: State) => (event: PointerEvent): State => {
   const { offsetX, offsetY } = event;
-  console.log('mouseup', offsetX, offsetY)
 
   let isBeginOfGame = false;
 
@@ -793,7 +788,6 @@ export const mouseup = (state: State) => (event: PointerEvent): State => {
     if (p.selectect) {
       const dx = p.initDrag ? (p.initDrag.x - p.coord.x) / 10 : p.coord.dx;
       const dy = p.initDrag ? (p.initDrag.y - p.coord.y) / 10 : p.coord.dy;
-      console.log('drag', dx, dy);
       isBeginOfGame = true;
 
       return {

@@ -1,8 +1,10 @@
 import * as conf from './conf'
-import { useRef, useEffect } from 'react'
-import { State, step, click, mouseMove, endOfGame, mousedown, mouseup,Pig, Brique} from './state'
+import { useRef, useEffect, useState } from 'react'
+import { State, step, mouseMove, mousedown, mouseup,Pig, Brique} from './state'
 import { render } from './renderer'
 import * as json from '../../data.json';
+
+import EndGamePage from '../endgame/endgame';
 export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
 
@@ -24,10 +26,9 @@ function randomChoice<T>(list: T[]): T {
 
 // Fonction pour créer les cochons et les briques en fonction du niveau donné
 function createEntities(levelId: number) {
-  const level = config.levels.find((lvl: { id: number }) => lvl.id === levelId);
+  var level = config.levels.find((lvl: { id: number }) => lvl.id === levelId);
   if (!level) {
-    console.error(`Level ${levelId} not found in the configuration.`);
-    return { pigs: [], briques: [] };
+    level = config.levels.find((lvl: { id: number }) => lvl.id === 1);
   }
 
   const pigs: Pig[] = level.pigs.map((pigConfig: { life: any; resting: any; target: any; weight: any; coord: any; radius: any; alpha: any; color: any; image: any }) => ({
@@ -65,7 +66,7 @@ function createEntities(levelId: number) {
 
   return { pigs, briques };
 }
-const Canvas = ({ height, width }: { height: number; width: number }) => {
+const Canvas = ({ height, width,level }: { height: number; width: number, level:number }) => {
  
   // intialisation des balles
   let position = 20;
@@ -107,8 +108,9 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     radius : conf.RADIUS
   }));
 
-  let { pigs, briques }  = createEntities(4);
+  let { pigs, briques }  = createEntities(level);
 
+    const canvasHeight = height - 100;
   const initialState: State = {
     pos: balls,
     pigs: pigs,
@@ -116,19 +118,25 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     target: null,
     reserves: reserveBall,
     shoot: null,
-    size: { height, width },
+    size: { height : canvasHeight, width },
     endOfGame: false,
+    win: false,
   }
 
   const ref = useRef<any>()
   const state = useRef<State>(initialState)
+  const [isGameEnded, setGameEnded] = useState(false);
 
   const iterate = (ctx: CanvasRenderingContext2D) => {
     state.current = step(state.current)
-    console.log(state.current.endOfGame)
+    // state.current.endOfGame = !endOfGame(state.current)
     render(ctx)(state.current)
+
+    
     if (!state.current.endOfGame) requestAnimationFrame(() => iterate(ctx))
-      console.log(state.current.endOfGame)
+    else {
+      setGameEnded(true);
+    }
   }
   const onClick = (e: PointerEvent) => {
     // state.current = click(state.current)(e)
@@ -172,6 +180,9 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     justifyContent: 'center',
     alignItems: 'center',
   };
+  if (isGameEnded) {
+    return <EndGamePage win={state.current.win} level={level} size={{height:height , width:width}}/>;
+  }
   return(
     <div style={backgroundStyle}>
       <canvas {...{ height, width, ref }} />

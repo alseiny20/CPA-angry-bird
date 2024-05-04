@@ -28,7 +28,6 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   const { height, width } = ctx.canvas;
   const backgroundImage = new Image();
   backgroundImage.src = conf.DEFAULT_BACKGROUND_IMAGE;
-  console.log('backgroundImage.src', backgroundImage.src);
   backgroundImage.onload = () => ctx.drawImage(backgroundImage, 0, 0, width, height);
 };
 
@@ -237,7 +236,6 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
     if(state.target && state.shoot){
       drawShoot(ctx, state.shoot);
-      console.log("shooting", state.shoot);
     }
 
   // Afficher le texte de fin si le jeu est terminé

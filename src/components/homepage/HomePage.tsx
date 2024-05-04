@@ -1,12 +1,15 @@
 import React from 'react';
 import * as conf from '../canvas/conf';
+import './homepage.css';
+
 type Props = {
   onPlayClick: () => void;
 };
 
 const HomePage: React.FC<Props> = ({ onPlayClick }) => {
+
   const logoImg = conf.LOGO_ANGRYBIRD;
-  const playImg = "https://img.genial.ly/5ac916d1c1c1330fe7524802/05716208-4713-4ee2-a2d0-33e794446a07.png";//conf.PLAY_BUTTON;
+  const playImg = conf.PLAY_BUTTON;
   const backgroundImg = conf.HOMEPAGE_BACKGROUND;
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: `url(${backgroundImg})`,
@@ -36,13 +39,24 @@ const HomePage: React.FC<Props> = ({ onPlayClick }) => {
     flexGrow: 1,
     paddingTop: '5%',
   };
+
+  const handleButtonClick = () => {
+    onPlayClick();
+    const button = document.querySelector('.button');
+    if (button) {
+      button.classList.add('button-clicked'); // Trigger animation
+      setTimeout(() => {
+        button.classList.remove('button-clicked'); // Reset animation after duration
+      }, 300); // Same duration as transition in CSS
+    }
+  };
   return (
     <div className="Homepage" style={backgroundStyle}>
       <div style={logoStyle}>
         <img className="logo" src={logoImg} alt="Logo" style={{ maxWidth: '500px'}} />
       </div>
       <div style={contentStyle}>
-        <button onClick={onPlayClick} style={{ border: 'none', background: 'none' ,  }}>
+        <button className="button" onClick={handleButtonClick} style={{ border: 'none', background: 'none' ,  }}>
           <img src={playImg} alt="Play Game" style={{ maxWidth: '200px' }}/>
         </button>
       </div>
