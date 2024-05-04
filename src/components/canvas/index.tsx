@@ -8,7 +8,6 @@ export const randomInt = (max: number) => Math.floor(Math.random() * max)
 export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random ren
 
 // Chargez le fichier JSON
-// const filePath = './data.json';
 // const jsonFile = fs.readFileSync(filePath);
 const jsonFileString = JSON.stringify(json);
 const config = JSON.parse(jsonFileString);
@@ -54,7 +53,7 @@ function createEntities(levelId: number) {
     color: brickConfig.color,
     image : brickConfig.image,
     alpha : brickConfig.alpha,
-    dr : brickConfig.dr
+    dr : brickConfig.dr,
 
   }));
 

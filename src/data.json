@@ -4,7 +4,7 @@
         "id": 1,
         "pigs": [
           {
-            "life": 10,
+            "life": 2,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -20,7 +20,7 @@
             "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
           },
           {
-            "life": 100,
+            "life": 2,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -312,16 +312,77 @@
         ],
         "bricks": [
           {
-            "life": 200,
+            "life": 3,
             "weight": 3,
             "coord": {
               "x": 650,
-              "y": 300,
+              "y": 505,
               "dx": 0,
               "dy": 0
             },
             "width": 50,
-            "height": 400,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 3,
+            "weight": 3,
+            "coord": {
+              "x": 650  ,
+              "y": 50,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 3,
+            "weight": 3,
+            "coord": {
+              "x": 500,
+              "y": 505,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+          {
+            "life": 3,
+            "weight": 3,
+            "coord": {
+              "x": 500  ,
+              "y": 50,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 50,
+            "height": 200,
+            "color": "#0000ff",
+            "alpha": 0,
+            "dr": 0
+          },
+
+          {
+            "life": 200,
+            "weight": 3,
+            "coord": {
+              "x": 500  ,
+              "y": 5,
+              "dx": 0,
+              "dy": 0
+            },
+            "width": 200,
+            "height": 50,
             "color": "#0000ff",
             "alpha": 0,
             "dr": 0
@@ -330,18 +391,17 @@
             "life": 200,
             "weight": 3,
             "coord": {
-              "x": 900  ,
-              "y": 300,
+              "x": 500  ,
+              "y": 400,
               "dx": 0,
               "dy": 0
             },
-            "width": 50,
-            "height": 400,
+            "width": 200,
+            "height": 50,
             "color": "#0000ff",
             "alpha": 0,
             "dr": 0
           }
-
 
           
         ]
