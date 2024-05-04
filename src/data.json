@@ -326,22 +326,24 @@
             "alpha": 0,
             "dr": 0
           },
-
           {
             "life": 200,
             "weight": 3,
             "coord": {
-              "x": 900,
-              "y": 400,
+              "x": 900  ,
+              "y": 300,
               "dx": 0,
               "dy": 0
             },
             "width": 50,
-            "height": 300,
+            "height": 400,
             "color": "#0000ff",
             "alpha": 0,
             "dr": 0
           }
+
+
+          
         ]
       }
     ]

@@ -145,7 +145,7 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
   // const rotationAngle = unbalanceTorque / brique.weight; // Angle of rotation due to unbalance
 
   // Apply gravity to the gravity center
-  coord.dy += conf.GRAVITY * brique.weight;
+  // coord.dy += conf.GRAVITY * brique.weight;
 
   // Apply air resistance based on direction to the gravity center
   const airFriction = coord.dy > 0 ? conf.AIR_FRICTION_DESCENDING : conf.AIR_FRICTION_ASCENDING;
@@ -223,7 +223,7 @@ const iterateBrique = (bound: Size) => (brique: Brique, otherBriques: Array<Briq
     }else if (brique.dr < 0) {
       brique.dr += 0.001
     }
-    console.log("dr", brique.dr);
+    brique.alpha = brique.alpha % 180
     // valeur absolue de dr 
     if (Math.abs(brique.dr) > 0.001) {
       brique.alpha += brique.dr
@@ -632,27 +632,32 @@ function arePolygonsColliding(points: Point[], brique: Brique): boolean {
 }
 export const collideRectangleRectangle= (brique1: Brique, brique2: Brique) => {
   const points1 = getRotatedRectanglePoints(brique1);
-  console.log("points---1", points1);
 
   const points2 = getRotatedRectanglePoints(brique2);
-  console.log("points---2", points2);
 
   if (arePolygonsColliding(points1, brique2)) {
       handleCollisionResponse(brique1, brique2);
   }
+  if (arePolygonsColliding(points2, brique1)) {
+      handleCollisionResponse(brique2, brique1);
+  }
+
 };
 
-function pointBall(point: Point ): Ball {
+function pointBall(point: Point, dx: number, dy: number): Ball {
   return {
     coord: {
       x: point.x,
       y: point.y,
-      dx: 0,
-      dy: 0
+      dx: dx,
+      dy: dy
     },
-    life: 1,
+    life: 10,
     weight: 1.2,
-    radius: 10
+    radius: 30,
+    resting: false,
+    invincible: 0
+
   };
 }
 
@@ -688,22 +693,82 @@ function isOverlapping(projection1: { min: number; max: number }, projection2: {
   return !(projection1.max < projection2.min || projection2.max < projection1.min);
 }
 
-function handleCollisionResponse(brique1: Brique, brique2: Brique) {
-  // Réponse simplifiée : ajuster les positions et vitesses pour "résoudre" la collision
-  // Cela peut être raffiné selon les besoins spécifiques du jeu
-  const dxMean = (brique1.coord.dx + brique2.coord.dx) / 2;
-  const dyMean = (brique1.coord.dy + brique2.coord.dy) / 2;
-
-  brique1.coord.dx = dxMean;
-  brique2.coord.dx = dxMean;
-  brique1.coord.dy = dyMean;
-  brique2.coord.dy = dyMean;
-
-
-  brique1.dr *= -0.5;
-  brique2.dr *= -0.5;
+function getBroder(brique : Brique): Point[] {
+  return [
+    { x: brique.coord.x, y: brique.coord.y },
+    { x: brique.coord.x + brique.width, y: brique.coord.y },
+    { x: brique.coord.x + brique.width, y: brique.coord.y + brique.height },
+    { x: brique.coord.x, y: brique.coord.y + brique.height }
+  ];
 }
 
+function handleCollisionResponse(brique1: Brique, brique2: Brique) {
+  const points1 = getRotatedRectanglePoints(brique1);
+  const points2 = getRotatedRectanglePoints(brique2);
+  let collisionDetected = false;
+
+  // Collision check et réaction pour chaque point de brique1 contre brique2
+  for (const point of points1) {
+    const x = brique2.coord.x;
+    const y = brique2.coord.y;
+    collideBallBrick(pointBall(point, brique1.coord.dx, brique1.coord.dy), brique2)
+
+    //  si il ya eu une colision on ajuste la position de la brique
+    if (x !== brique2.coord.x || y !== brique2.coord.y) {
+      // adjustBrickPositionAfterCollision(brique1, brique2);
+      collisionDetected = true;
+      break; // Arrêter la vérification dès qu'une collision est détectée
+    }
+
+
+  }
+
+  if (!collisionDetected) { // Seulement vérifier la deuxième brique si aucune collision n'a été trouvée auparavant
+    for (const point of points2) {
+      const x = brique1.coord.x;
+      const y = brique1.coord.y;
+    collideBallBrick(pointBall(point, brique2.coord.dx, brique2.coord.dy), brique1)
+
+      if (x !== brique1.coord.x || y !== brique1.coord.y) {
+        // adjustBrickPositionAfterCollision(brique1, brique2);
+        // collisionDetected = true;
+        break; // Arrêter la vérification dès qu'une collision est détectée
+      }
+    }
+  }
+}
+
+// function pointBall(point: Point, dx: number, dy: number): Ball {
+//   return {
+//     coord: { x: point.x, y: point.y, dx: dx, dy: dy },
+//     life: 1,
+//     weight: 1,
+//     radius: 0.5 // Petit rayon pour simuler un point
+//   };
+// }
+
+function adjustBrickPositionAfterCollision(movingBrique: Brique, staticBrique: Brique) {
+  // Déplacer la brique en collision loin de la brique statique
+  // Cet exemple suppose que `movingBrique` vient de subir l'impact et doit être ajustée
+  const overlap = 10; // Définir en fonction de la logique du jeu
+  const escapeVector = {
+    dx: movingBrique.coord.dx > 0 ? overlap : -overlap,
+    dy: movingBrique.coord.dy > 0 ? overlap : -overlap
+  };
+
+  // Ajuster la position pour empêcher la fusion
+  movingBrique.coord.x += escapeVector.dx;
+  movingBrique.coord.y += escapeVector.dy;
+
+  // Inverser les directions pour simuler une répulsion
+  movingBrique.coord.dx *= -0.5;
+  movingBrique.coord.dy *= -0.5;
+  staticBrique.coord.dx *= -0.5;
+  staticBrique.coord.dy *= -0.5;
+}
+
+
+  
 
 
 
@@ -957,7 +1022,6 @@ export const step = (state: State) => {
     state.pos.forEach((ball) => {
       state.briques.forEach((brique) => {
         // if (checkBallBriqueCollision(ball, brique)) {
-          console.log("collision detected");
           // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
           // handleBallBriqueCollision(ball, brique);
           // ball.coord = a;
@@ -968,7 +1032,6 @@ export const step = (state: State) => {
       
       state.pigs.forEach((pig) => {
         if (collide(ball.coord, pig.coord)) {
-          console.log("collision detected");
           // let a = adjustPosition(ball.coord, brique.coord, brique.coord.x, brique.coord.y);
           // handleBallPigCollision(ball, pig);
           // ball.coord = a;
@@ -1060,7 +1123,6 @@ export const mousedown =
     if (target) {
       target.selectect = true
       target.initDrag = { x: offsetX, y: offsetY, dx: 0, dy: 0 }
-      console.log("selectect", target.coord)
     }
     return state
   }
@@ -1073,7 +1135,6 @@ export const mousedown =
         const dx = offsetX - target.initDrag.x;
         const dy = offsetY - target.initDrag.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        console.log('distance', distance);
 
         if (distance < conf.MAX_DISTANCE) {
             target.coord.x = offsetX;
@@ -1095,7 +1156,6 @@ export const mousedown =
              coord: {
              x: target.coord.x, y: target.coord.y, dx: 
              (target.initDrag.x - target.coord.x) / 10, dy: (target.initDrag.y - target.coord.y) / 10 }});
-        console.log('babal',path);
         return { ...state, pos: state.pos, shoot: path };
     }
 
@@ -1106,7 +1166,6 @@ export const mousedown =
 
 export const mouseup = (state: State) => (event: PointerEvent): State => {
   const { offsetX, offsetY } = event;
-  console.log('mouseup', offsetX, offsetY)
 
   let isBeginOfGame = false;
 
@@ -1114,7 +1173,6 @@ export const mouseup = (state: State) => (event: PointerEvent): State => {
     if (p.selectect) {
       const dx = p.initDrag ? (p.initDrag.x - p.coord.x) / 10 : p.coord.dx;
       const dy = p.initDrag ? (p.initDrag.y - p.coord.y) / 10 : p.coord.dy;
-      console.log('drag', dx, dy);
       isBeginOfGame = true;
 
       return {
