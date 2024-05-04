@@ -107,7 +107,7 @@ const Canvas = ({ height, width }: { height: number; width: number }) => {
     radius : conf.RADIUS
   }));
 
-  let { pigs, briques }  = createEntities(2);
+  let { pigs, briques }  = createEntities(4);
 
   const initialState: State = {
     pos: balls,
