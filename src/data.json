@@ -156,7 +156,7 @@
         "id": 2,
         "pigs": [
           {
-            "life": 100,
+            "life": 2,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -169,7 +169,7 @@
             "radius": 30,
             "alpha": 1,
             "color": "#ff0000",
-            "image": "king_pig_image.png"
+            "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
           }
         ],
         "bricks": [
@@ -220,7 +220,7 @@
         "id": 3,
         "pigs": [
           {
-            "life": 100,
+            "life": 2,
             "resting": true,
             "target": true,
             "weight": 1.2,
@@ -233,7 +233,7 @@
             "radius": 30,
             "alpha": 1,
             "color": "#ff0000",
-            "image": "king_pig_image.png"
+            "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
           }
         ],
         "bricks": [

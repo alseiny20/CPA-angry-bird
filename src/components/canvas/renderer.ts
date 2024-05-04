@@ -28,7 +28,6 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   const { height, width } = ctx.canvas;
   const backgroundImage = new Image();
   backgroundImage.src = conf.DEFAULT_BACKGROUND_IMAGE;
-  console.log('backgroundImage.src', backgroundImage.src);
   backgroundImage.onload = () => ctx.drawImage(backgroundImage, 0, 0, width, height);
   
   // const { width, height } = ctx.canvas;
@@ -223,13 +222,11 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     if ( (Math.abs(positionBall.x - conf.COORD_TARGET.x)< 30 && Math.abs(positionBall.y - conf.COORD_TARGET.y) < 30
     && target?.selectect === false )|| initPos) {
       initPos = true;
-      console.log("******************************");
       positionTire.x = conf.COORD_TARGET.x;
       positionTire.y = conf.COORD_TARGET.y;
       space_ball = 0;
       }
     if (target?.resting === true && target.selectect === true ) {
-      console.log("**>>>>>>>");
 
       initPos = false;
     }
@@ -247,7 +244,6 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
     if(state.target && state.shoot){
       drawShoot(ctx, state.shoot);
-      console.log("shooting", state.shoot);
     }
 
   

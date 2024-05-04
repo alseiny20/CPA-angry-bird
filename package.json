@@ -39,6 +39,7 @@
     ]
   },
   "devDependencies": {
+    "@types/howler": "^2.2.11",
     "@types/node": "^20.12.7"
   }
 }
