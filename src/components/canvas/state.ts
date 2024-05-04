@@ -682,10 +682,15 @@ const cleanUnconformePosition = (brique: Brique, width: number, height: number) 
   }
   // s'il ya un point de la brique en rotation est en dehors de la zone de jeu on le tue
   rotationAngle.forEach((point) => {
-    if (point.x < 0 ||  point.y > height || point.x > width ) {
+    if (point.x < 0 ||  point.y > height+50 || point.x > width ) {
       brique.life = 0;
     }
   });
+
+  // tout brique qui tendrais vers la rampe de lancement est tué
+  if (brique.coord.x < conf.COORD_TARGET.x) {
+    brique.life = 0;
+  }
   
 } 
 

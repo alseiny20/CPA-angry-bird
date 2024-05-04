@@ -177,12 +177,13 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   clear(ctx);
 
   // Dessiner la lance
-  const slingshot = new Image();
-  slingshot.src = conf.IMAGE_SLINGSHOT;
-  slingshot.onload = () => {
+  const logoImage = new Image();
+  logoImage.src = conf.IMAGE_SLINGSHOT;
+  logoImage.onload = () => {
+  // Vous pouvez modifier x et y pour positionner le logo où vous le souhaitez sur le canevas.
   const x = conf.COORD_TARGET.x - 50
   const y = conf.COORD_TARGET.y
-  ctx.drawImage(slingshot, x, y,80,  170);
+  ctx.drawImage(logoImage, x, y, 100, 100);
   };
 
   // Dessiner les balles
@@ -239,7 +240,6 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
       console.log("shooting", state.shoot);
     }
 
-  
   // Afficher le texte de fin si le jeu est terminé
   if (state.endOfGame) {
     msg = "You Win";
