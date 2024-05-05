@@ -10,8 +10,6 @@ interface EndGameProps {
   level: number;
   size: {height:number, width:number}
 }
-
-
   const backgroundImg = conf.END_GAME_BACKGROUND;
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: `url(${backgroundImg})`,

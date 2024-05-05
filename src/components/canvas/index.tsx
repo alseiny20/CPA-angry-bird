@@ -12,6 +12,7 @@ export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random r
 const jsonFileString = JSON.stringify(json);
 const config = JSON.parse(jsonFileString);
 
+// Fonction pour initialiser le canvas
 const initCanvas =
   (iterate: (ctx: CanvasRenderingContext2D) => void) =>
   (canvas: HTMLCanvasElement) => {
@@ -31,6 +32,7 @@ function createEntities(levelId: number) {
     level = config.levels.find((lvl: { id: number }) => lvl.id === 1);
   }
 
+  // Chargement des Pigs
   const pigs: Pig[] = level.pigs.map((pigConfig: { life: any; resting: any; target: any; weight: any; coord: any; radius: any; alpha: any; color: any; }) => ({
     life: pigConfig.life,
     resting: pigConfig.resting,
@@ -42,6 +44,7 @@ function createEntities(levelId: number) {
     color: pigConfig.color,
   }));
 
+  // Chargement des briques
   const bricks: Brick[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any ;image:string}) => ({
     life: brickConfig.life,
     weight: brickConfig.weight,
@@ -55,6 +58,7 @@ function createEntities(levelId: number) {
 
   return { pigs, bricks };
 }
+
 const Canvas = ({ height, width,level }: { height: number; width: number, level:number }) => {
  
   // intialisation des objets
@@ -64,6 +68,7 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
     return position;
   }
   
+  // Création des birds de réserve
   let reserveBirds = new Array(conf.reserve_birds_numbers).fill(null).map((coord) => ({
     life: conf.BIRDLIFE,
     resting: true,
@@ -81,7 +86,6 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
     image: randomChoice(conf.IMAGE_BIRD_ALL)
   }))
   
-
   let { pigs, bricks }  = createEntities(level);
 
   const canvasHeight = height - 100;
@@ -111,10 +115,6 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
       setGameEnded(true);
     }
   }
-  const onClick = (e: PointerEvent) => {
-    // state.current = click(state.current)(e)
-    console.log('click', e.clientX, e.clientY)
-  }
 
   const ondrag = (e: PointerEvent) => {
     state.current = mousedown(state.current)(e)
@@ -130,7 +130,6 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
   useEffect(() => {
     if (ref.current) {
       initCanvas(iterate)(ref.current)
-      ref.current.addEventListener('click', onClick)
       ref.current.addEventListener('mousemove', onMove)
       ref.current.addEventListener('mousedown', ondrag)
       ref.current.addEventListener('mouseup', onUp)
@@ -143,6 +142,7 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
       ref.current.removeEventListener('mouseup', onUp)
     }
   }, [])
+  
   const backgroundImg = conf.DEFAULT_BACKGROUND_IMAGE;
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: `url(${backgroundImg})`,

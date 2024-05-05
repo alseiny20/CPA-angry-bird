@@ -15,6 +15,7 @@ export type Bird = {
   radius: number;
   alpha?: number;
 };
+
 export type Pig = {
   coord: Coord;
   life: number;
@@ -441,18 +442,24 @@ function arePolygonsColliding(points: Point[], brick: Brick): boolean {
 
   return true;
 }
+// Fonction de collision entre deux briques
 export const collideRectangleRectangle= (brick1: Brick, brick2: Brick) => {
+  // Récupérer les points des briques après rotation
   const points1 = getRotatedRectanglePoints(brick1);
   const points2 = getRotatedRectanglePoints(brick2);
 
+  // Vérifier la collision entre les points des briques
   if (arePolygonsColliding(points1, brick2)) {
+    // Gérer la collision entre les briques
       handleCollisionResponse(brick1, brick2);
   }
   if (arePolygonsColliding(points2, brick1)) {
+    // Gérer la collision entre les briques
     handleCollisionResponse(brick2, brick1);
   }
 };
 
+// Fonction de transformation d'un point en balle
 function pointBall(point: Point, dx: number, dy: number): Bird {
   return {
     coord: {
@@ -485,6 +492,7 @@ function getAxes(points: Point[]): Point[] {
   return axes;
 }
 
+// Fonction de projection d'un polygone sur un axe
 function projectPolygon(axis: Point, points: Point[]): { min: number; max: number } {
   let min = Infinity;
   let max = -Infinity;
@@ -498,16 +506,19 @@ function projectPolygon(axis: Point, points: Point[]): { min: number; max: numbe
   return { min, max };
 }
 
+// Fonction de vérification de la superposition de deux projections
 function isOverlapping(projection1: { min: number; max: number }, projection2: { min: number; max: number }): boolean {
   return !(projection1.max < projection2.min || projection2.max < projection1.min);
 }
 
+// Fonction de gestion des consequences de la superposition
 function handleCollisionResponse(brick1: Brick, brick2: Brick) {
   const points1 = getRotatedRectanglePoints(brick1);
   const points2 = getRotatedRectanglePoints(brick2);
   let testColide;
 
   // Collision check et réaction pour chaque point de brick1 contre brick2
+  // on transforme chaque angle de la brique en ball pour et effectuer une teste de collision 
   for (const point of points1) {
     testColide = collideCircleRectangle(pointBall(point, brick1.coord.dx, brick1.coord.dy), brick2)
 
@@ -527,7 +538,7 @@ function handleCollisionResponse(brick1: Brick, brick2: Brick) {
   }
 }
 
-  
+// Fonction de teste de collision entre un cercle et un rectangle
 const checkCircleRectangleCollision = (circle: Bird, rect: Brick) => {
   let testX = circle.coord.x;
   let testY = circle.coord.y;
@@ -554,6 +565,7 @@ const checkCircleRectangleCollision = (circle: Bird, rect: Brick) => {
   return false;
 };
 
+// Fonction de selection d'un nouveau target
 const choose_new_target = (state: State) => {
   const newTarget = state.reserves.pop();
   if (newTarget) {
@@ -566,6 +578,7 @@ const choose_new_target = (state: State) => {
   return state;
 };
 
+// Fonction Motrice du jeu
 export const step = (state: State) => {
   if (!inTurn){
     if (state.birds.length <= 0  && state.reserves.length <= 0 && state.target == null || state.pigs.length <= 0){
@@ -573,7 +586,7 @@ export const step = (state: State) => {
     }
     state = choose_new_target(state);
   }
-
+  // verifcation de collision ball ball
   state.birds.map((p1, i, arr) => {
     arr.slice(i + 1).map((p2) => {
       if (collide(p1.coord, p2.coord)) {
@@ -588,7 +601,8 @@ export const step = (state: State) => {
         collideCircleCircle(p1.coord, p2.coord)
       }
     })
-    
+
+    // Gestion des collisions des birds avec les autres composants
     state.birds.forEach((bird) => {
       state.bricks.forEach((brick) => {
           collideCircleRectangle(bird, brick);
@@ -609,7 +623,8 @@ export const step = (state: State) => {
       });
     });
   })
-
+  
+  // Gestion de collision entre les pigs et les briques
   state.pigs.forEach((pig) => {
     state.bricks.forEach((brick) => {
       if (checkCircleRectangleCollision(pig, brick)) {
@@ -619,6 +634,7 @@ export const step = (state: State) => {
     });
   });
 
+  // Gestion de collision entre les briques
   state.bricks.forEach((brick, i, arr) => {
     arr.slice(i + 1).forEach((other) => {
       collideRectangleRectangle(other,brick);//, state.size,state.bricks);
@@ -626,12 +642,13 @@ export const step = (state: State) => {
   });
 
   inTurn = !check_endTurn(state)
-
+  // filtre les birds morts
   var birds = state.birds.map(bird => iterateBird(state.size)(bird)).filter((p) => p.life > 0);
 
   if (!inTurn) {
     birds = birds.filter((bird) => bird.target === false || !bird.target)
   }
+  // filtre les morts
   var pigs = state.pigs.map(iteratePig(state.size)).filter(p => p.life > 0)
   // s'il ya un shoot en cour met a jour la trajectoir
   var bricks =state.bricks.map((brick: Brick) => iterateBrick(state.size)(brick, state.bricks)).filter(p => p.life > 0)
@@ -645,10 +662,11 @@ export const step = (state: State) => {
   return newState;
 };
 
+// fonction qui permet de nettoyer les briques qui sont hors de la zone de jeu
 const cleanUnconformePosition = (brick: Brick, width: number, height: number) => {
-  // si la brick est en collision avec le sole et que aucune de ces coté n'est par terre
+  // si la brique est en collision avec le sole et que aucune de ces coté n'est par terre
   const rotationAngle = getRotatedRectanglePoints(brick);
-  if (brick.coord.y + brick.height >= height ) {     // si la brick est en collision avec le sol
+  if (brick.coord.y + brick.height >= height ) {     // si la brique est en collision avec le sol
     let contacteSol = false;
     rotationAngle.forEach((point) => {
       if (point.y >= height - 5) {
@@ -688,15 +706,14 @@ function findPath(target: Bird): Array<Coord> {
 }
 const hasMoved = (bird: Bird ) => bird.coord.dx !== 0 || bird.coord.dy !== 0 
 
+// fonction qui permet de verifier si le tour est terminé
 const check_endTurn = (state: State) => {
   const birdsMoved = state.birds.some(hasMoved);
   const pigsMoved = state.pigs.some(hasMoved);
   return !birdsMoved && !pigsMoved && state.target === null;
 };
 
-
 // fonctions d'interaction utilisateur  --------
-
 export const click =
   (state: State) =>
   (event: PointerEvent): State => {
@@ -765,9 +782,7 @@ export const mousedown =
 };
 
 export const mouseup = (state: State) => (event: PointerEvent): State => {
-
   let isBeginOfGame = false;
-
   const updatedBirds = state.birds.map((p) => {
     if (p.selectect) {
       const dx = p.initDrag ? (p.initDrag.x - p.coord.x) / 10 : p.coord.dx;

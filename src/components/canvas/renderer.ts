@@ -14,7 +14,7 @@ const clear = (ctx: CanvasRenderingContext2D) => {
   backgroundImage.onload = () => ctx.drawImage(backgroundImage, 0, 0, width, height);
 };
 
-
+// Fonction pour dessiner un cercle
 const drawCircle = (
   ctx: CanvasRenderingContext2D,
   coord: Coord,
@@ -43,6 +43,7 @@ const drawCircle = (
   }
 };
 
+// Fonction pour dessiner un rectangle
 const drawBrick = (
   ctx: CanvasRenderingContext2D,
   brick: Brick
@@ -68,6 +69,7 @@ const drawBrick = (
   ctx.restore(); // Restore the original state
 };
 
+// Fonction pour dessiner un tire
 const drawShoot = (
   ctx: CanvasRenderingContext2D,
   shoot: Array<{ x: number; y: number }>
@@ -79,7 +81,6 @@ const drawShoot = (
     ctx.fill();
   });
 }
-
 
 var initPos = false;
 export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
@@ -104,6 +105,7 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
   state.bricks.forEach(brick => {
     drawBrick(ctx, brick);
   });
+
   // Dessiner les oiseaux de réserve
   state.reserves.forEach(reserve => {
     drawCircle(ctx, reserve.coord, reserve.image, reserve.alpha, reserve.radius);
@@ -114,36 +116,36 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
     drawCircle(ctx, pig.coord, conf.IMAGE_PIGS, pig.alpha, pig.radius);
   });
   
-    const target = state.birds.find((p) => p.target)
-    const positionBird = target ? target.coord : { x: conf.COORD_TARGET.x, y: conf.COORD_TARGET.y, dx: 0, dy: 0 };
-    var space_bird = 15;
-    ctx.lineWidth = 5; // Set the thickness of the line
-    ctx.strokeStyle = 'green'; // Set the color of the line
-    var positionTire = { x: positionBird.x, y: positionBird.y };
-    if ( (Math.abs(positionBird.x - conf.COORD_TARGET.x)< 30 && Math.abs(positionBird.y - conf.COORD_TARGET.y) < 30
-    && target?.selectect === false )|| initPos) {
-      initPos = true;
-      positionTire.x = conf.COORD_TARGET.x;
-      positionTire.y = conf.COORD_TARGET.y;
-      space_bird = 0;
-      }
-    if (target?.resting === true && target.selectect === true ) {
-
-      initPos = false;
+  const target = state.birds.find((p) => p.target)
+  const positionBird = target ? target.coord : { x: conf.COORD_TARGET.x, y: conf.COORD_TARGET.y, dx: 0, dy: 0 };
+  var space_bird = 15;
+  ctx.lineWidth = 5; // Set the thickness of the line
+  ctx.strokeStyle = 'green'; // Set the color of the line
+  var positionTire = { x: positionBird.x, y: positionBird.y };
+  if ( (Math.abs(positionBird.x - conf.COORD_TARGET.x)< 30 && Math.abs(positionBird.y - conf.COORD_TARGET.y) < 30
+  && target?.selectect === false )|| initPos) {
+    initPos = true;
+    positionTire.x = conf.COORD_TARGET.x;
+    positionTire.y = conf.COORD_TARGET.y;
+    space_bird = 0;
     }
-    // Draw the left side of the slingshot
-    ctx.beginPath();
-    ctx.moveTo(conf.COORD_TARGET.x - 40, conf.COORD_TARGET.y + 5); // Start point
-    ctx.lineTo(positionTire.x - space_bird, positionTire.y + 10); // End point at the slingshot pouch
-    ctx.stroke(); // Draw the path
+  if (target?.resting === true && target.selectect === true ) {
 
-    // Draw the right side of the slingshot
-    ctx.beginPath();
-    ctx.moveTo(conf.COORD_TARGET.x + 40, conf.COORD_TARGET.y + 10); // Start point
-    ctx.lineTo(positionTire.x + space_bird, positionTire.y + 10); // End point at the slingshot pouch
-    ctx.stroke(); // Draw the path
+    initPos = false;
+  }
+  // Draw the left side of the slingshot
+  ctx.beginPath();
+  ctx.moveTo(conf.COORD_TARGET.x - 40, conf.COORD_TARGET.y + 5); // Start point
+  ctx.lineTo(positionTire.x - space_bird, positionTire.y + 10); // End point at the slingshot pouch
+  ctx.stroke(); // Draw the path
 
-    if(state.target && state.shoot){
-      drawShoot(ctx, state.shoot);
-    }
+  // Draw the right side of the slingshot
+  ctx.beginPath();
+  ctx.moveTo(conf.COORD_TARGET.x + 40, conf.COORD_TARGET.y + 10); // Start point
+  ctx.lineTo(positionTire.x + space_bird, positionTire.y + 10); // End point at the slingshot pouch
+  ctx.stroke(); // Draw the path
+
+  if(state.target && state.shoot){
+    drawShoot(ctx, state.shoot);
+  }
 };

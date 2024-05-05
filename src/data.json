@@ -492,8 +492,8 @@
           "target": true,
           "weight": 1.2,
           "coord": {
-            "x": 755,
-            "y": 400,
+            "x": 1140,
+            "y": 900,
             "dx": 0,
             "dy": 0
           },
@@ -509,6 +509,22 @@
           "weight": 1.2,
           "coord": {
             "x": 915,
+            "y": 900,
+            "dx": 0,
+            "dy": 0
+          },
+          "radius": 30,
+          "alpha": 1,
+          "color": "#ff0000",
+          "image": "https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_KingPig_Classic.png"
+        },
+        {
+          "life": 10,
+          "resting": true,
+          "target": true,
+          "weight": 1.2,
+          "coord": {
+            "x": 375,
             "y": 900,
             "dx": 0,
             "dy": 0
