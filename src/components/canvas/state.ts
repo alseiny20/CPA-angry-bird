@@ -463,7 +463,7 @@ function pointBall(point: Point, dx: number, dy: number): Ball {
       dy: dy
     },
     life: 10,
-    weight: 1.2,
+    weight: 0.5,
     radius: 50,
     resting: false,
     invincible: 0
