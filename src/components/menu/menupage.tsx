@@ -69,7 +69,6 @@ const Menu: React.FC<MenuProps> = ({ size }) => {
         <button onClick={(e) => handleButtonClick(2,e)}style={levelBox} > 2 </button>
         <button onClick={(e) => handleButtonClick(3,e)}style={levelBox} > 3 </button>
         <button onClick={(e) => handleButtonClick(4,e)}style={levelBox} > 4 </button>
-        <button onClick={(e) => handleButtonClick(5,e)}style={levelBox} > 5 </button>
       </div>
     </div>
   );
