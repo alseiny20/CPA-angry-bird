@@ -1,6 +1,6 @@
 import * as conf from './conf'
 import { useRef, useEffect, useState } from 'react'
-import { State, step, mouseMove, mousedown, mouseup,Pig, Brique} from './state'
+import { State, step, mouseMove, mousedown, mouseup,Pig, Brick} from './state'
 import { render } from './renderer'
 import * as json from '../../data.json';
 
@@ -42,33 +42,30 @@ function createEntities(levelId: number) {
     color: pigConfig.color,
   }));
 
-  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any ;image:string}) => ({
+  const bricks: Brick[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any ;image:string}) => ({
     life: brickConfig.life,
     weight: brickConfig.weight,
     coord: brickConfig.coord,
     width: brickConfig.width,
     height: brickConfig.height,
     image : conf.BLOCK,
-    rotationAngle : 0,
-    angularVelocity : 0,
-    center : {x: brickConfig.coord.x + brickConfig.width / 2, y: brickConfig.coord.y + brickConfig.height / 2},
     alpha : 0,
     dr : 0,
   }));
 
-  return { pigs, briques };
+  return { pigs, bricks };
 }
 const Canvas = ({ height, width,level }: { height: number; width: number, level:number }) => {
  
-  // intialisation des balles
+  // intialisation des objets
   let position = 20;
   const getPosition = () => {
     position = position + 60;
     return position;
   }
   
-  let reserveBall = new Array(conf.ball_none_numbers).fill(null).map((coord) => ({
-    life: conf.BALLLIFE,
+  let reserveBirds = new Array(conf.reserve_birds_numbers).fill(null).map((coord) => ({
+    life: conf.BIRDLIFE,
     resting: true,
     target: true,
     weight: 1.2,
@@ -81,19 +78,19 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
     radius: conf.RADIUS,
     alpha: 1,
     color: '#ff0000',
-    image: randomChoice(conf.IMAGE_BALL_ALL)
+    image: randomChoice(conf.IMAGE_BIRD_ALL)
   }))
   
 
-  let { pigs, briques }  = createEntities(level);
+  let { pigs, bricks }  = createEntities(level);
 
   const canvasHeight = height - 100;
   const initialState: State = {
-    pos: [],
+    birds: [],
     pigs: pigs,
-    briques: briques,
+    bricks: bricks,
     target: null,
-    reserves: reserveBall,
+    reserves: reserveBirds,
     shoot: null,
     size: { height : canvasHeight, width },
     endOfGame: false,
@@ -106,7 +103,6 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
 
   const iterate = (ctx: CanvasRenderingContext2D) => {
     state.current = step(state.current)
-    // state.current.endOfGame = !endOfGame(state.current)
     render(ctx)(state.current)
 
     
