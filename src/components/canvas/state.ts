@@ -11,7 +11,6 @@ export type Ball = {
   initDrag?: Coord;
   selectect?: boolean;
   invincible?: number;
-  color?: string;
   image?: string;
   radius: number;
   alpha?: number;
@@ -25,11 +24,10 @@ export type Pig = {
   initDrag?: Coord;
   selectect?: boolean;
   invincible?: number;
-  color?: string;
-  image?: string;
   radius: number;
   alpha?: number;
 };
+
 export type Brique = {
   coord: Coord; 
   width: number;
@@ -40,8 +38,7 @@ export type Brique = {
   initDrag?: Coord;
   selectect?: boolean;
   invincible?: number;
-  color?: string;
-  image?: string;
+  image: string;
   alpha : number;
   dr : number;
 };
@@ -49,7 +46,7 @@ export type Brique = {
 type Size = { height: number; width: number }
 
 export type State = {
-  pos: Array<Ball>
+  pos: Array<Ball> 
   pigs: Array<Pig>
   briques : Array<Brique>
   reserves: Array<Ball>
@@ -236,8 +233,19 @@ coord.y = gravityCenterY - brique.height / 2;
   if (Math.abs(brique.dr) > conf.ROTATIONFRICTION) {
     brique.alpha += brique.dr
   }
-  // on clean les brique hors du cadre
+  // si la valeur de rotations est trop faible on l'arrondie 
+  if (Math.abs(brique.dr) < conf.ROTATIONFRICTION) {
+    brique.dr = 0;
+  }
+  // on clean les brique hors du cadreà
   cleanUnconformePosition(brique, bound.width, bound.height);
+
+  // on arete la brique si sont mouvement est trop faible
+  if (Math.abs (brique.coord.x) < conf.MINMOVE && Math.abs (brique.coord.y) < conf.MINMOVE) {
+    brique.coord.dx = 0;
+    brique.coord.dy = 0;
+    brique.resting = true;
+  }
 
   return {  
       ...brique,
@@ -377,10 +385,6 @@ export const collideBallBrick = (ball: Ball, brick: Brique): {collide: boolean, 
           // Decrease brick strength or destroy it
           brick.life--;
 
-          if (brick.life <= 0) {
-              // Handle brick destruction
-          }
-
           // Calculate impulse and update ball velocity
           const impulse = -(1 + conf.COEFFICIENT_OF_RESTITUTION) * velAlongNormal / (1 / ball.weight + 1 / brick.weight);
           ball.coord.dx += (impulse / ball.weight) * nx;
@@ -510,14 +514,7 @@ function handleCollisionResponse(brique1: Brique, brique2: Brique) {
 
     //  si il ya eu une colision on ajuste la position de la brique
     if (testColide.collide) {
-      // on tue la brique qui a la plus grande viteese
-      brique1.coord.dx = testColide.ball.coord.dx
-      brique1.coord.dy = testColide.ball.coord.dy
-      const vitess1 = Math.sqrt(brique1.coord.dx * brique1.coord.dx + brique1.coord.dy * brique1.coord.dy)
-      const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
-      console.log("vitess1 et deux", vitess1, vitess2)
-
-      // brique2.life = -1
+     break;
     }
   }
 
@@ -525,14 +522,7 @@ function handleCollisionResponse(brique1: Brique, brique2: Brique) {
     for (const point of points2) {
       testColide = collideBallBrick(pointBall(point, brique2.coord.dx, brique2.coord.dy), brique1)
       if (testColide.collide) {
-        // on tue la brique qui a la plus grande viteese
-        brique2.coord.dx = testColide.ball.coord.dx
-        brique2.coord.dy = testColide.ball.coord.dy
-        const vitess1 = Math.sqrt(brique1.coord.dx * brique1.coord.dx + brique1.coord.dy * brique1.coord.dy)
-        const vitess2 = Math.sqrt(brique2.coord.dx * brique2.coord.dx + brique2.coord.dy * brique2.coord.dy)
-        console.log("vitess1 et deux prime", vitess1, vitess2)
-
-        // brique1.life = -1
+        break;
       }
     }
   }
@@ -579,8 +569,6 @@ const choose_new_target = (state: State) => {
 
 export const step = (state: State) => {
   if (!inTurn){
-    // console.log("taillle des pigs " + state.pigs.length + " end of game" + state.endOfGame)
-    // console.log(state.pigs.length<=0)
     if (state.pos.length <= 0  && state.reserves.length <= 0 && state.target == null || state.pigs.length <= 0){
       return {...state, endOfGame: true, win: state.pigs.length <= 0};
     }
@@ -673,7 +661,6 @@ const cleanUnconformePosition = (brique: Brique, width: number, height: number) 
       // on tue la brique
       brique.life = 0;
     }
-    
   }
   // s'il ya un point de la brique en rotation est en dehors de la zone de jeu on le tue
   rotationAngle.forEach((point) => {
@@ -699,11 +686,12 @@ function findPath(target: Ball): Array<Coord> {
   }
   return path
 }
-const hasMoved = (obj: Ball | Brique) => obj.coord.dx !== 0 || obj.coord.dy !== 0;
+const hasMoved = (ball: Ball ) => ball.coord.dx !== 0 || ball.coord.dy !== 0 
 
 const check_endTurn = (state: State) => {
   const ballsMoved = state.pos.some(hasMoved);
-  return !ballsMoved /* && !briquesMoved */ && state.target === null;
+  const pigsMoved = state.pigs.some(hasMoved);
+  return !ballsMoved && !pigsMoved && state.target === null;
 };
 
 export const click =
@@ -774,7 +762,6 @@ export const mousedown =
 };
 
 export const mouseup = (state: State) => (event: PointerEvent): State => {
-  const { offsetX, offsetY } = event;
 
   let isBeginOfGame = false;
 

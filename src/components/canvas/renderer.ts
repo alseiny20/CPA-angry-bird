@@ -1,5 +1,5 @@
 import * as conf from './conf';
-import { State, Coord, Point, getRotatedRectanglePoints } from './state';
+import { State, Coord, Point, getRotatedRectanglePoints, Brique } from './state';
 
 const COLORS = {
   RED: '#ff0000',
@@ -46,71 +46,41 @@ export const randomSign = () => Math.sign(Math.random() - 0.5) // cette random r
 const drawCircle = (
   ctx: CanvasRenderingContext2D,
   coord: Coord,
-  color: string,
-  initColor: string,
   link?: string,
   alpha: number = 1,
   radius: number = conf.RADIUS
 ) => {
   const rotationAngle = Math.atan2(coord.dy, coord.dx); // Calculate rotation angle based on velocity
 
-  if (initColor !== COLORS.RED) {
-    // For non-red balls, draw normally.
+  // For red balls (with images), load and draw the image.
+  const backgroundImage = new Image();
+  backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
+
+  // Ensure image is loaded before drawing
+  backgroundImage.onload = () => {
+    ctx.save(); // Save the current context state
     ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.arc(coord.x, coord.y, radius, 0, 2 * Math.PI);
-    ctx.fill();
-  } else {
-    // For red balls (with images), load and draw the image.
-    const backgroundImage = new Image();
-    backgroundImage.src = link || conf.DEFAULT_BALL_BACKGROUND;
+    ctx.globalAlpha = alpha; // Apply alpha only for this image
 
-    // Ensure image is loaded before drawing
-    backgroundImage.onload = () => {
-      ctx.save(); // Save the current context state
-      ctx.beginPath();
-      ctx.globalAlpha = alpha; // Apply alpha only for this image
+    ctx.translate(coord.x, coord.y);
+    ctx.rotate(rotationAngle); // Apply rotation
+    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+    ctx.clip();
 
-      ctx.translate(coord.x, coord.y);
-      ctx.rotate(rotationAngle); // Apply rotation
-      ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-      ctx.clip();
-
-      ctx.drawImage(backgroundImage, -radius, -radius, radius * 2, radius * 2);
-      ctx.restore(); // Restore the context state, including globalAlpha
-    };
+    ctx.drawImage(backgroundImage, -radius, -radius, radius * 2, radius * 2);
+    ctx.restore(); // Restore the context state, including globalAlpha
   }
-};
-const computeColor = (life: number, maxLife: number, baseColor: string) => {
-  return rgbaTorgb(baseColor, (maxLife - life) * (1 / maxLife));
 };
 
 const drawBrique = (
   ctx: CanvasRenderingContext2D,
-  { x, y }: { x: number; y: number },
-  width: number,
-  height: number,
-  color: string,
-  initColor: string,
-  alpha: number, // Angle in radians
-  imageLink?: string, // Path to the brick image
+  brique: Brique
 ) => {
   
   ctx.save(); // Save the current context state$
   
-  if (initColor !== COLORS.RED) {
-  
-    ctx.translate(x + width / 2, y + height / 2); // Move the context to rectangle center
-    const angle = alpha * (Math.PI / 180);
-    ctx.rotate(angle); // Rotate the context by alpha
-    // Draw the rectangle centered around the origin with rotation
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.fillRect(-width / 2, -height / 2, width, height);
-  } else {
-    // For red balls (with images), load and draw the image.
     const backgroundImage = new Image();
-    backgroundImage.src = imageLink || conf.BLOCK;
+    backgroundImage.src =   brique.image
 
     // Ensure image is loaded before drawing
     backgroundImage.onload = () => {
@@ -118,14 +88,11 @@ const drawBrique = (
       ctx.save(); // Save the current context state
       ctx.beginPath();
 
-      ctx.translate(x,y);
-      // if(alpha !== 0){
-        const angle = alpha * (Math.PI / 180);
+      ctx.translate(brique.coord.x + brique.width / 2, brique.coord.y + brique.height / 2); // Move the context to rectangle center
+        const angle = brique.alpha * (Math.PI / 180);
         ctx.rotate(angle); // Rotate the context by alpha
-      // }
-      ctx.drawImage(backgroundImage, 0,0, width, height); // Draw the image centered around the origin
+      ctx.drawImage(backgroundImage, -brique.width / 2, -brique.height / 2, brique.width, brique.height); // Draw the image centered around the origin
       ctx.restore(); 
-    };
   }
   ctx.restore(); // Restore the original state
 };
@@ -136,7 +103,7 @@ const drawShoot = (
 ) => {
   shoot.forEach((p) => { 
     ctx.beginPath();
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'blue';
     ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
     ctx.fill();
   });
@@ -187,22 +154,22 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
   // Dessiner les balles
   state.pos.forEach(ball => {
-    drawCircle(ctx, ball.coord, computeColor(ball.life, conf.BALLLIFE, ball.color || COLORS.RED), ball.color || COLORS.RED, ball.image, ball.alpha, ball.radius);
+    drawCircle(ctx, ball.coord, ball.image, ball.alpha, ball.radius);
   });
 
   // Dessiner les briques
   state.briques.forEach(brique => {
-    drawBrique(ctx, brique.coord, brique.width, brique.height, computeColor(brique.life, conf.BRIQUELIFE, brique.color || COLORS.RED), brique.color || COLORS.RED, brique.alpha, brique.image);
-    drawCorner(ctx, getRotatedRectanglePoints(brique));
+    drawBrique(ctx, brique);
+    // drawCorner(ctx, getRotatedRectanglePoints(brique));
   });
   // Dessiner les balles de réserve
   state.reserves.forEach(reserve => {
-    drawCircle(ctx, reserve.coord, computeColor(reserve.life, conf.BALLLIFE, reserve.color || COLORS.GREEN), reserve.color || COLORS.GREEN, reserve.image, reserve.alpha, reserve.radius);
+    drawCircle(ctx, reserve.coord, reserve.image, reserve.alpha, reserve.radius);
   });
 
   // Dessiner les cochons
   state.pigs.forEach(pig => {
-    drawCircle(ctx, pig.coord, computeColor(pig.life, conf.PIGLIFE, pig.color || COLORS.GREEN), pig.color || COLORS.RED, pig.image, pig.alpha, pig.radius);
+    drawCircle(ctx, pig.coord, conf.IMAGE_PIGS, pig.alpha, pig.radius);
   });
   
     const target = state.pos.find((p) => p.target)
@@ -240,11 +207,11 @@ export const render = (ctx: CanvasRenderingContext2D) => (state: State) => {
 
   // Afficher le texte de fin si le jeu est terminé
   if (state.endOfGame) {
-    msg = "You Win";
-    image = conf.IMAGE_RED;
+    var msg = "You Win";
+    var image = conf.IMAGE_RED;
     if(state.pigs.length > 0 && state.pos.length <= 0){
-      var msg = "Game Over";
-      var image = conf.IMAGE_MINIONPIG;
+       msg = "Game Over";
+       image = conf.IMAGE_MINIONPIG;
     }
     drawEndGameScreen(ctx, image, msg);
   }

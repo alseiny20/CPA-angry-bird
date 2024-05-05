@@ -31,7 +31,7 @@ function createEntities(levelId: number) {
     level = config.levels.find((lvl: { id: number }) => lvl.id === 1);
   }
 
-  const pigs: Pig[] = level.pigs.map((pigConfig: { life: any; resting: any; target: any; weight: any; coord: any; radius: any; alpha: any; color: any; image: any }) => ({
+  const pigs: Pig[] = level.pigs.map((pigConfig: { life: any; resting: any; target: any; weight: any; coord: any; radius: any; alpha: any; color: any; }) => ({
     life: pigConfig.life,
     resting: pigConfig.resting,
     target: pigConfig.target,
@@ -40,28 +40,20 @@ function createEntities(levelId: number) {
     radius: pigConfig.radius,
     alpha: pigConfig.alpha,
     color: pigConfig.color,
-    image: pigConfig.image,
   }));
 
-  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any; color: any ;image:string}) => ({
+  const briques: Brique[] = level.bricks.map((brickConfig: { life: any; weight: any; coord: any; width: any; height: any ;image:string}) => ({
     life: brickConfig.life,
     weight: brickConfig.weight,
     coord: brickConfig.coord,
     width: brickConfig.width,
     height: brickConfig.height,
-    color: brickConfig.color,
-    image : brickConfig.image,
+    image : conf.BLOCK,
     rotationAngle : 0,
     angularVelocity : 0,
     center : {x: brickConfig.coord.x + brickConfig.width / 2, y: brickConfig.coord.y + brickConfig.height / 2},
     alpha : 0,
     dr : 0,
-    corner : [
-      {x: brickConfig.coord.x, y: brickConfig.coord.y},
-      {x: brickConfig.coord.x + brickConfig.width, y: brickConfig.coord.y},
-      {x: brickConfig.coord.x + brickConfig.width, y: brickConfig.coord.y + brickConfig.height},
-      {x: brickConfig.coord.x, y: brickConfig.coord.y + brickConfig.height}
-    ]
   }));
 
   return { pigs, briques };
@@ -74,7 +66,7 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
     position = position + 60;
     return position;
   }
-
+  
   let reserveBall = new Array(conf.ball_none_numbers).fill(null).map((coord) => ({
     life: conf.BALLLIFE,
     resting: true,
@@ -92,27 +84,12 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
     image: randomChoice(conf.IMAGE_BALL_ALL)
   }))
   
-  // Création et ajout de six nouvelles balles à myArray
-  const balls = new Array(conf.ball_numbers).fill(null).map((_) => ({
-    life: conf.BALLLIFE,
-    weight: 2,
-    resting: true,
-    coord: {
-      x: randomInt(width),
-      y: randomInt(height),
-      dx: randomSign() * randomInt(10),
-      dy: randomSign() * randomInt(10)
-    },
-    color: '#00ff00', // Couleur verte pour les nouvelles balles
-    image: randomChoice(conf.IMAGE_BALL_ALL),
-    radius : conf.RADIUS
-  }));
 
   let { pigs, briques }  = createEntities(level);
 
-    const canvasHeight = height - 100;
+  const canvasHeight = height - 100;
   const initialState: State = {
-    pos: balls,
+    pos: [],
     pigs: pigs,
     briques: briques,
     target: null,
@@ -140,6 +117,7 @@ const Canvas = ({ height, width,level }: { height: number; width: number, level:
   }
   const onClick = (e: PointerEvent) => {
     // state.current = click(state.current)(e)
+    console.log('click', e.clientX, e.clientY)
   }
 
   const ondrag = (e: PointerEvent) => {
